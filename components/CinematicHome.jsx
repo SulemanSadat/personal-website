@@ -84,9 +84,7 @@ export default function CinematicHome() {
   }, []);
 
   useEffect(() => {
-    // The pinned WebGL journey is a desktop enhancement. Touch devices use
-    // the image-led project list so the first vertical swipe stays native.
-    const media = matchMedia('(min-width: 1000px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+    const media = matchMedia('(prefers-reduced-motion: no-preference)');
     const update = () => {
       let supported = false;
       try { const canvas = document.createElement('canvas'); const gl = canvas.getContext('webgl2'); supported = Boolean(gl); gl?.getExtension('WEBGL_lose_context')?.loseContext(); } catch { /* Native content remains available. */ }
@@ -110,8 +108,11 @@ export default function CinematicHome() {
     let last = -1;
     const context = gsap.context(() => {
       const timeline = gsap.timeline({ scrollTrigger: {
-        trigger: stage.current, start: 'top top', end: () => '+=' + innerHeight * (mobile ? 5.5 : 10),
-        pin: true, scrub: .65, invalidateOnRefresh: true,
+        // Mobile uses a CSS-sticky stage inside a naturally tall section. It
+        // retains the journey without ScrollTrigger pinning or touch capture.
+        trigger: mobile ? stage.current.parentElement : stage.current,
+        start: 'top top', end: mobile ? 'bottom bottom' : () => '+=' + innerHeight * 10,
+        pin: !mobile, scrub: mobile ? .35 : .65, invalidateOnRefresh: true,
         onUpdate: self => {
           const p = self.progress;
           setHeroInert(p > (mobile ? .37 : .1));

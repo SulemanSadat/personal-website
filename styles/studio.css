@@ -125,9 +125,9 @@ html.studio-scroll-ready::-webkit-scrollbar { display: none; }
   .site-shell .about-principles { display: grid; overflow: visible; margin: 25px 0; padding: 25px 0; border-block: 1px solid var(--line); }
   .site-shell .about-principles > div { border: 0; padding: 0; min-height: 0; }
   .site-shell .skills-section { margin-top: 65px; }
-  .site-shell .contact-header { margin-bottom: 40px; }
-  .site-shell .contact-title { font-size: clamp(40px, 12vw, 72px); }
-  .site-shell .contact-subtitle { font-size: 12px; max-width: 30ch; }
+  .site-shell .contact-header { display: block; width: 100%; margin: 0 0 40px; }
+  .site-shell .contact-title { width: 100%; max-width: none; font-size: clamp(40px, 12vw, 72px); }
+  .site-shell .contact-subtitle { width: 100%; max-width: none; margin: 14px 0 0; font-size: 12px; text-align: left; }
   .site-shell .contact-main { display: flex; flex-direction: column; gap: 45px; overflow: visible; margin: 0; padding: 0; }
   .site-shell .contact-info-card, .site-shell .contact-form-card { flex: auto; width: 100%; border-radius: 0; }
   .site-shell .contact-form { grid-template-columns: 1fr; }

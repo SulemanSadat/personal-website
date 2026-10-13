@@ -60,8 +60,9 @@ export default function CinematicWorld({ progress, theme = 'dark', mobile = fals
     background: '#050505', ambient: .7, sky: '#8ebfff', ground: '#080808',
     floor: '#0c1018', frame: '#202a39', rail: '#234570', strip: '#74b5ff',
   };
-  const frames = Array.from({ length: 23 }, (_, i) => 8 - i * 5);
-  return <Canvas frameloop="demand" dpr={mobile ? 1 : [1, 1.5]} camera={{ fov: mobile ? 64 : 56, near: .1, far: 140, position: [0, .3, 3] }} gl={{ antialias: !mobile, alpha: true, powerPreference: 'high-performance' }} aria-hidden="true">
+  const frameCount = mobile ? 14 : 23;
+  const frames = Array.from({ length: frameCount }, (_, i) => 8 - i * (mobile ? 8 : 5));
+  return <Canvas className="cinema-canvas" frameloop="demand" dpr={mobile ? 1 : [1, 1.5]} camera={{ fov: mobile ? 64 : 56, near: .1, far: 140, position: [0, .3, 3] }} gl={{ antialias: !mobile, alpha: true, powerPreference: 'high-performance', stencil: false }} aria-hidden="true">
     <color attach="background" args={[palette.background]} />
     <ambientLight intensity={palette.ambient} />
     <hemisphereLight args={[palette.sky, palette.ground, 1.6]} />

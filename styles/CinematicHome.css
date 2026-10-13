@@ -162,7 +162,6 @@
 /* Touch layouts use native document scrolling and image-first project cards. */
 @media (max-width: 999px), (hover: none), (pointer: coarse) {
   .cinematic-home.is-simple .cinema-stage { min-height: 100svh; }
-  .cinematic-home.is-simple .cinema-mode { display: none; }
   .cinematic-home.is-simple .cinema-static-work { width: min(calc(100% - 40px), 720px); padding: 72px 0 84px; }
   .cinematic-home.is-simple .cinema-static-work > h2 { font-size: clamp(40px, 11vw, 66px); margin-top: 16px; }
   .cinematic-home.is-simple .cinema-static-grid { display: grid; grid-template-columns: 1fr; gap: 28px; margin-top: 34px; }
@@ -334,10 +333,13 @@
 /* Phone and tablet: an immersive opening frame followed by a scroll-led story. */
 .cinema-story { display: contents; }
 @media (max-width: 999px) {
+  .cinematic-home.is-cinematic .cinema-sequence { height: 600svh; }
   .cinema-stage {
     height: 100svh; min-height: 100svh; max-height: none; overflow: hidden;
     display: block; padding: 0;
   }
+  .cinematic-home.is-cinematic .cinema-stage { position: sticky; top: 0; }
+  .cinema-world, .cinema-world canvas { touch-action: pan-y; }
   .cinema-vignette { background: none; }
   .cinema-halo { display: none; }
   .cinema-hero-meta { top: max(82px, calc(env(safe-area-inset-top, 0px) + 70px)); left: 6%; right: 6%; inset-inline: 6%; z-index: 4; font-size: 8px; }

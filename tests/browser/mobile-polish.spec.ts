@@ -10,14 +10,23 @@ test("first swipe stays native, drag-select navigation works, and long press has
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(page.locator("[data-home-ready=true]")).toBeAttached();
+  await expect(page.locator(".cinematic-home")).toHaveClass(/is-cinematic/);
+  await expect(page.locator(".cinema-world canvas")).toBeVisible();
+  const mode = page.locator(".cinema-mode");
+  await expect(mode).toHaveText("Use simple view");
+  await mode.tap();
   await expect(page.locator(".cinematic-home")).toHaveClass(/is-simple/);
-  await expect(page.locator(".cinema-static-grid img").first()).toBeVisible();
+  await expect(mode).toHaveText("Enable 3D journey");
+  await mode.tap();
+  await expect(page.locator(".cinematic-home")).toHaveClass(/is-cinematic/);
+  await expect(page.locator(".cinema-world canvas")).toBeVisible();
 
   const client = await page.context().newCDPSession(page);
   await client.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: 500 }] });
   await client.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 195, y: 180 }] });
   await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
+  await expect(page.locator(".cinematic-home")).toHaveClass(/is-cinematic/);
 
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
   const home = page.getByRole("navigation", { name: "Bottom navigation" }).getByRole("link", { name: "Home", exact: true });
@@ -31,6 +40,25 @@ test("first swipe stays native, drag-select navigation works, and long press has
 
   await page.locator("body").dispatchEvent("contextmenu", { bubbles: true, cancelable: true });
   await expect(page.locator(".context-menu")).toHaveCount(0);
+});
+
+test("contact introduction is a flush single column on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/#contact");
+  const header = page.locator("#contact .contact-header");
+  const heading = header.locator("#contact-title");
+  const intro = header.locator(".contact-subtitle");
+  await expect(intro).toBeVisible();
+  const [headerBox, headingBox, introBox, infoBox, formBox] = await Promise.all([
+    header.boundingBox(), heading.boundingBox(), intro.boundingBox(),
+    page.locator("#contact .contact-info-card").boundingBox(),
+    page.locator("#contact .contact-form-card").boundingBox(),
+  ]);
+  expect(Math.abs(headingBox!.x - headerBox!.x)).toBeLessThanOrEqual(1);
+  expect(Math.abs(introBox!.x - headingBox!.x)).toBeLessThanOrEqual(1);
+  expect(introBox!.width).toBeGreaterThanOrEqual(headerBox!.width - 1);
+  expect(formBox!.y).toBeGreaterThan(infoBox!.y + infoBox!.height);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 for (const theme of ["dark", "light"] as const) {
   test(`mobile controls remain readable and usable in ${theme} theme`, async ({ page }) => {
