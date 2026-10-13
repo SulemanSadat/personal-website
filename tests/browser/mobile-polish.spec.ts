@@ -26,6 +26,7 @@ test("first swipe stays native, drag-select navigation works, and long press has
   await dock.getByRole("link", { name: "Work", exact: true }).tap();
   await expect(page).toHaveURL(/#portfolio$/);
   await expect(page.locator(".tunnel-project:not([hidden])")).toHaveCount(1);
+  await expect(page.locator(".tunnel-project:not([hidden]) .tunnel-project-visual img")).toBeVisible();
   await expect(page.locator(".cinema-world canvas")).toHaveAttribute("data-project-textures", "ready");
   await dock.getByRole("link", { name: "Home", exact: true }).tap();
   await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(5);

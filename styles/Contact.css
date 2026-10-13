@@ -4,6 +4,7 @@
 .contact-subtitle { color: var(--muted); font-size: 15px; line-height: 1.8; margin-top: 18px; }
 .contact-main { display: grid; grid-template-columns: .8fr 1.2fr; gap: 24px; align-items: start; }
 .contact-info-card, .contact-form-card { min-width: 0; padding: clamp(22px,3vw,36px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+#contact-form { scroll-margin-top: 96px; }
 .contact-info-title, .form-title { font-size: 22px; margin-bottom: 14px; }
 .contact-info-description { font-size: 13px; line-height: 1.8; color: var(--muted); margin-bottom: 28px; }
 .contact-detail-item { display: flex; align-items: center; gap: 14px; }

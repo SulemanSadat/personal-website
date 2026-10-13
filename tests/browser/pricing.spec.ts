@@ -29,15 +29,18 @@ test("pricing actions preserve the homepage and reliably populate contact", asyn
   const contact = page.locator("#contact");
   const firstAction = page.getByRole("link", { name: /Get started — Web Apps, Business Website/ });
   await firstAction.click();
-  await expect(page).toHaveURL(/subject=Inquiry/);
+  await expect(page).toHaveURL(/subject=Inquiry.*#contact-form$/);
   await expect(contact.locator("input[name=subject]")).toHaveValue(/Business Website/);
   await expect(page.locator(".cinema-stage")).toBeAttached();
-  await expect.poll(() => page.evaluate(() => Math.abs((document.getElementById("contact")?.getBoundingClientRect().top || 0)) < 260), { timeout: 30000 }).toBeTruthy();
+  await expect.poll(() => page.evaluate(() => {
+    const form = document.getElementById("contact-form")?.getBoundingClientRect();
+    return Boolean(form && form.top >= 0 && form.top < innerHeight * .35);
+  }), { timeout: 30000 }).toBeTruthy();
 
   await page.goto("/pricing", { waitUntil: "domcontentloaded" });
   const secondAction = page.getByRole("link", { name: /Request Custom Quote — Web Apps, Web Platform/ });
   await secondAction.click();
-  await expect(page).toHaveURL(/subject=Inquiry/);
+  await expect(page).toHaveURL(/subject=Inquiry.*#contact-form$/);
   await expect(contact.locator("input[name=subject]")).toHaveValue(/Web Platform/);
   await expect(page.locator(".cinema-stage")).toBeAttached();
 });
@@ -52,11 +55,11 @@ test("pricing cards keep their text crisp while preserving the hover affordance"
 test("first visit opening is session-scoped and favicon points at the reference asset", async ({ browser }) => {
   const context = await browser.newContext();
   const page = await context.newPage();
-  await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("status", { name: "Welcome to the portfolio" })).toBeVisible({ timeout: 30000 });
+  await page.goto("/", { waitUntil: "commit" });
+  await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeVisible({ timeout: 30000 });
   await expect(page.locator("link[rel=icon]").first()).toHaveAttribute("href", /favicon\.jpg/);
-  await expect(page.getByRole("status", { name: "Welcome to the portfolio" })).toBeHidden({ timeout: 10000 });
+  await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeHidden({ timeout: 10000 });
   await page.reload({ waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("status", { name: "Welcome to the portfolio" })).toHaveCount(0);
+  await expect(page.getByRole("status", { name: "Loading portfolio" })).toHaveCount(0);
   await context.close();
 });

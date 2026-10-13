@@ -9,7 +9,7 @@ export default function ServiceOfferCard({ plan, promotion, serviceLabel = "Shop
   const titleId = useId();
   const isShopify = plan.id === "shopify";
   const Icon = isShopify ? FiShoppingBag : plan.id === "business" ? FiBriefcase : FiCode;
-  const href = `/?${new URLSearchParams(createPricingInquiry({ serviceLabel, serviceId, plan })).toString()}#contact`;
+  const href = `/?${new URLSearchParams(createPricingInquiry({ serviceLabel, serviceId, plan })).toString()}#contact-form`;
   return (
     <article className={`service-offer ${isShopify ? "service-offer--shopify" : ""}`} aria-labelledby={titleId}>
       <div className="service-offer-intro">

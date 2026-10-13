@@ -38,8 +38,8 @@ export default function FirstVisitPreloader() {
   }, []);
 
   if (!visible) return null;
-  return <div className="studio-opening" role="status" aria-label="Welcome to the portfolio">
+  return <div className="studio-opening" role="status" aria-label="Loading portfolio">
     <span className="opening-spinner" aria-hidden="true" />
-    <span className="opening-label">SULEMAN SADAT</span>
+    <span className="opening-label">Loading…</span>
   </div>;
 }

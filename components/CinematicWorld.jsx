@@ -42,8 +42,8 @@ function CameraRig({ progress, mobile = false }) {
   }, [progress, invalidate, gl]);
   useFrame(() => {
     const p = progress.current.value;
-    const start = mobile ? .34 : .2;
-    const travelRange = mobile ? .62 : .76;
+    const start = mobile ? .4 : .2;
+    const travelRange = mobile ? .56 : .76;
     if (p < start) {
       camera.position.set(0, .3, MathUtils.lerp(3, 11, p / start));
       camera.lookAt(0, .1, -12);

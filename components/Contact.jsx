@@ -102,7 +102,7 @@ export default function Contact({ embedded = false }) {
               <div className="social-media-links">{socials.map(social => <a key={social.label} href={social.href} className="social-media-link" aria-label={social.label} target="_blank" rel="noopener noreferrer"><social.icon aria-hidden="true" /></a>)}</div>
             </div>
           </div>
-          <div className="contact-form-card">
+          <div className="contact-form-card" id="contact-form">
             <h2 className="form-title">Send a Message</h2>
             <form ref={formRef} onSubmit={handleSubmit} className="contact-form" noValidate aria-busy={sending}>
               {fields.map(({ name, label, ...field }) => {

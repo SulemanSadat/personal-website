@@ -61,8 +61,8 @@ export default function CinematicHome() {
       event.preventDefault();
       intro.current?.kill(); setIntroDone(true);
       const trigger = sceneTrigger.current;
-      const rangeStart = mobile ? .34 : .225;
-      const rangeSize = mobile ? .62 : .745;
+      const rangeStart = mobile ? .4 : .225;
+      const rangeSize = mobile ? .56 : .745;
       window.scrollTo({ top: trigger.start + (rangeStart + .48 / projects.length * rangeSize) * (trigger.end - trigger.start), behavior: event.detail.behavior });
     };
     window.addEventListener('section-navigation', navigate);
@@ -112,13 +112,13 @@ export default function CinematicHome() {
         // retains the journey without ScrollTrigger pinning or touch capture.
         trigger: mobile ? stage.current.parentElement : stage.current,
         start: 'top top', end: mobile ? 'bottom bottom' : () => '+=' + innerHeight * 10,
-        pin: !mobile, scrub: mobile ? .35 : .65, invalidateOnRefresh: true,
+        pin: !mobile, scrub: mobile ? .28 : .65, invalidateOnRefresh: true,
         onUpdate: self => {
           const p = self.progress;
           setHeroInert(p > (mobile ? .37 : .1));
           journeyProgress.value = p; journeyProgress.invalidate?.();
-          const rangeStart = mobile ? .34 : .225;
-          const rangeSize = mobile ? .62 : .745;
+          const rangeStart = mobile ? .4 : .225;
+          const rangeSize = mobile ? .56 : .745;
           const next = p < rangeStart || p > .97 ? -1 : Math.min(projects.length - 1, Math.floor((p - rangeStart) / rangeSize * projects.length));
           if (last !== next) { last = next; setActive(next); }
           root.current?.style.setProperty('--journey-progress', p);
@@ -130,9 +130,9 @@ export default function CinematicHome() {
           .to('.cinema-portrait', { scale: .78, yPercent: -10, opacity: 0, duration: .3, ease: 'none' }, .06)
           .to('.cinema-copy-left, .cinema-copy-right, .cinema-hero-meta', { opacity: 0, y: -16, duration: .08, ease: 'none' }, .25)
           .to('.cinema-halo', { scale: .4, opacity: 0, duration: .22, ease: 'none' }, 0)
-          .fromTo('.cinema-world', { opacity: 0 }, { opacity: 1, duration: .14, ease: 'none' }, .29)
-          .fromTo('.tunnel-heading', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .035 }, .27)
-          .to('.tunnel-heading', { opacity: 0, duration: .035 }, .305)
+          .fromTo('.cinema-world', { opacity: 0 }, { opacity: 1, duration: .12, ease: 'none' }, .3)
+          .fromTo('.tunnel-heading', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: .04 }, .27)
+          .to('.tunnel-heading', { opacity: 0, duration: .04 }, .36)
           .to('.cinema-world', { opacity: 0, duration: .04 }, .96)
           .fromTo('.tunnel-exit', { opacity: 0, scale: .8 }, { opacity: 1, scale: 1, duration: .06 }, .94);
       } else timeline.to('.cinema-hero-name', { scale: .67, y: -90, opacity: 0, duration: .19, ease: 'none' }, 0)
@@ -189,8 +189,8 @@ export default function CinematicHome() {
 
   const seekProject = index => {
     const trigger = sceneTrigger.current;
-    const rangeStart = mobile ? .34 : .225;
-    const rangeSize = mobile ? .62 : .745;
+    const rangeStart = mobile ? .4 : .225;
+    const rangeSize = mobile ? .56 : .745;
     if (trigger) window.scrollTo({ top: trigger.start + (rangeStart + (index + .48) / projects.length * rangeSize) * (trigger.end - trigger.start), behavior: 'instant' });
   };
   const skipIntro = () => { intro.current?.kill(); setIntroDone(true); };
@@ -214,6 +214,7 @@ export default function CinematicHome() {
           <div className="tunnel-heading" aria-hidden="true"><span className="cinema-kicker">02 / SELECTED WORK</span><p>Ideas become<br /><em>real things.</em></p></div>
           <div className="tunnel-hud" hidden={active < 0}><span>SELECTED WORK / {String(active + 1).padStart(2, '0')} — {String(projects.length).padStart(2, '0')}</span><span>SCROLL TO TRAVEL</span></div>
           <div className="tunnel-projects">{projects.map((project, i) => <article key={project.id} className={`tunnel-project ${i % 2 ? 'on-left' : 'on-right'}`} hidden={active !== i}>
+            <div className="tunnel-project-visual"><Image src={project.image} alt={`${project.title} project preview`} width={800} height={500} sizes="(max-width: 999px) 88vw, 1px" /></div>
             <span className="cinema-kicker">PROJECT {String(i + 1).padStart(2, '0')} / {project.category}</span><h2>{project.title}</h2><p>{project.description}</p><div className="tunnel-tech">{project.technologies.map((tech, n) => <span key={n}>{tech}</span>)}</div><div className="tunnel-links">{project.live && <a href={project.live} target="_blank" rel="noopener noreferrer">View project <IconArrowUpRight size={16} /></a>}{project.github && <a href={project.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}</div>
             <div className="tunnel-controls"><button onClick={() => seekProject(Math.max(0, i - 1))} disabled={i === 0} aria-label="Previous project"><IconArrowLeft size={18} /></button><span>{String(i + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}</span><button onClick={() => seekProject(Math.min(projects.length - 1, i + 1))} disabled={i === projects.length - 1} aria-label="Next project"><IconArrowRight size={18} /></button></div>
           </article>)}</div>

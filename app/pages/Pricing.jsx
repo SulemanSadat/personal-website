@@ -32,7 +32,7 @@ function PricingCard({ plan, serviceLabel, serviceId, comparison }) {
   const headingId = useId();
   const delivery = plan.features.find((feature) => feature.startsWith("Delivery:"));
   const inquiry = createPricingInquiry({ serviceLabel, serviceId, plan });
-  const href = `/?${new URLSearchParams(inquiry).toString()}#contact`;
+  const href = `/?${new URLSearchParams(inquiry).toString()}#contact-form`;
 
   return (
     <article className={`p2__card ${plan.featured ? "p2__card--featured" : ""}`} aria-labelledby={headingId}>

@@ -4,6 +4,8 @@ test("opening covers the first HTML paint even before application JavaScript loa
   await page.route("**/_next/**/*.js", route => route.abort());
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".studio-opening")).toBeVisible();
+  await expect(page.locator(".studio-opening")).toContainText("Loading…");
+  await expect(page.locator(".studio-opening")).not.toContainText("Suleman Sadat");
   await expect(page.locator(".site-shell")).toBeHidden();
   await expect(page.locator(".bottom-nav")).toBeHidden();
   await expect(page.locator(".studio-opening")).toHaveCSS("background-color", "rgb(5, 7, 10)");
@@ -61,6 +63,17 @@ for (const [width, height, label] of [[1440,1000,"desktop"], [768,1024,"tablet"]
       await page.screenshot({ path: `artifacts/ux/${label}-${theme}-work.png` });
       if (width < 1000) await expect(mode).toHaveCount(0);
       const card = page.locator(".tunnel-project:not([hidden])");
+      if (width < 1000) {
+        const preview = card.locator(".tunnel-project-visual img");
+        await expect(preview).toBeVisible();
+        const layout = await card.evaluate(element => {
+          const image = element.querySelector(".tunnel-project-visual")?.getBoundingClientRect();
+          const heading = element.querySelector("h2")?.getBoundingClientRect();
+          return { imageHeight: image?.height || 0, imageBottom: image?.bottom || 0, headingTop: heading?.top || 0 };
+        });
+        expect(layout.imageHeight).toBeGreaterThan(120);
+        expect(layout.headingTop).toBeGreaterThanOrEqual(layout.imageBottom);
+      }
       if (theme === "light") await expect(card).toHaveCSS("background-color", "rgb(255, 255, 255)");
       await page.locator("#contact").scrollIntoViewIfNeeded();
       if (width < 1000) await expect(mode).toHaveCount(0);
@@ -87,7 +100,7 @@ test("repeated section links, pricing selections and history keep the homepage m
     await page.getByRole("link", { name: new RegExp(`— Web Apps, ${plan}`) }).click();
     await expect(page.locator("input[name=subject]")).toHaveValue(new RegExp(plan));
     await expect(page.locator("textarea[name=message]")).toHaveValue(new RegExp(plan));
-    await expect.poll(() => page.locator("#contact").evaluate(el => Math.abs(el.getBoundingClientRect().top))).toBeLessThan(260);
+    await expect.poll(() => page.locator("#contact-form").evaluate(el => el.getBoundingClientRect().top)).toBeLessThan(350);
     expect(await stage!.evaluate(el => el.isConnected)).toBe(true);
   }
   await page.goBack();
@@ -116,6 +129,6 @@ test("pricing navigation keeps one guarded route handoff", async ({ page }) => {
   await page.locator("#pricing").scrollIntoViewIfNeeded();
   await page.getByRole("link", { name: /Get started — Web Apps, Business Website/ }).click();
   await expect(page.locator("#contact input[name=subject]")).toHaveValue(/Business Website/);
-  await expect.poll(() => page.locator("#contact").evaluate(element => Math.abs(element.getBoundingClientRect().top))).toBeLessThan(260);
+  await expect.poll(() => page.locator("#contact-form").evaluate(element => element.getBoundingClientRect().top)).toBeLessThan(350);
   expect(await page.evaluate(() => document.documentElement.dataset.sectionNavigation || "")).toBe("");
 });
