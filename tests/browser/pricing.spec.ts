@@ -46,7 +46,7 @@ test("pricing cards keep their text crisp while preserving the hover affordance"
   await page.goto("/pricing", { waitUntil: "domcontentloaded" });
   const card = page.locator(".p2__card").first();
   await card.hover();
-  await expect.poll(() => card.evaluate(element => ({ card: getComputedStyle(element).filter, descendants: [...element.querySelectorAll("*")].map(node => getComputedStyle(node).filter).filter(Boolean) }))).toEqual({ card: "none", descendants: [] });
+  await expect.poll(() => card.evaluate(element => ({ card: getComputedStyle(element).filter, descendants: [...element.querySelectorAll("*")].map(node => getComputedStyle(node).filter).filter(value => value !== "none") }))).toEqual({ card: "none", descendants: [] });
 });
 
 test("first visit opening is session-scoped and favicon points at the reference asset", async ({ browser }) => {

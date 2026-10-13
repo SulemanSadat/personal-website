@@ -84,7 +84,9 @@ export default function CinematicHome() {
   }, []);
 
   useEffect(() => {
-    const media = matchMedia('(prefers-reduced-motion: no-preference)');
+    // The pinned WebGL journey is a desktop enhancement. Touch devices use
+    // the image-led project list so the first vertical swipe stays native.
+    const media = matchMedia('(min-width: 1000px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
     const update = () => {
       let supported = false;
       try { const canvas = document.createElement('canvas'); const gl = canvas.getContext('webgl2'); supported = Boolean(gl); gl?.getExtension('WEBGL_lose_context')?.loseContext(); } catch { /* Native content remains available. */ }

@@ -158,6 +158,24 @@
   .site-shell .cinema-content .skill-chip { min-width: 0; padding: 14px 12px; font-size: 10px; }
   .site-shell .cinema-content .skills-group { gap: 9px; }
 }
+
+/* Touch layouts use native document scrolling and image-first project cards. */
+@media (max-width: 999px), (hover: none), (pointer: coarse) {
+  .cinematic-home.is-simple .cinema-stage { min-height: 100svh; }
+  .cinematic-home.is-simple .cinema-mode { display: none; }
+  .cinematic-home.is-simple .cinema-static-work { width: min(calc(100% - 40px), 720px); padding: 72px 0 84px; }
+  .cinematic-home.is-simple .cinema-static-work > h2 { font-size: clamp(40px, 11vw, 66px); margin-top: 16px; }
+  .cinematic-home.is-simple .cinema-static-grid { display: grid; grid-template-columns: 1fr; gap: 28px; margin-top: 34px; }
+  .cinematic-home.is-simple .cinema-static-grid article { overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+  .cinematic-home.is-simple .cinema-static-grid article > a:first-child { display: block; }
+  .cinematic-home.is-simple .cinema-static-grid img { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; margin: 0; border: 0; }
+  .cinematic-home.is-simple .cinema-static-grid article > :not(a:first-child) { margin-inline: 18px; }
+  .cinematic-home.is-simple .cinema-static-grid article > .cinema-kicker { display: block; margin-top: 18px; }
+  .cinematic-home.is-simple .cinema-static-grid h3 { margin-top: 9px; margin-bottom: 10px; font-size: clamp(23px, 7vw, 30px); }
+  .cinematic-home.is-simple .cinema-static-grid article > p { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; font-size: 12px; line-height: 1.65; }
+  .cinematic-home.is-simple .cinema-static-grid .tunnel-tech { margin-top: 14px; }
+  .cinematic-home.is-simple .cinema-static-grid .tunnel-links { margin: 18px; padding-top: 14px; }
+}
 :root[data-theme="dark"] .cinema-portrait::after { background: linear-gradient(to bottom, transparent, #050505d9 68%, #050505 100%); }
 :root[data-theme="light"] .cinema-portrait::after { background: linear-gradient(to bottom, transparent, #ffffffe0 68%, #ffffff 100%); }
 @media (max-width: 600px) and (max-height: 650px) {

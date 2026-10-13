@@ -93,7 +93,9 @@
     position: relative; z-index: 1; min-width: 0; min-height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
     border: 0; border-radius: 16px; color: var(--dock-ink); background: transparent; font-size: 10px; font-weight: 600; letter-spacing: .005em;
     transition: color .28s ease, transform .35s var(--ease);
+    touch-action: pan-y; user-select: none; -webkit-user-select: none;
   }
+  .bottom-nav.is-dragging a[data-drag-active="true"] { color: var(--dock-active-ink); transform: translateY(-1px) scale(1.04); }
   .bottom-nav a[aria-current] { color: var(--dock-active-ink); }
   .bottom-nav a:hover { color: var(--ink); }
   .bottom-nav a:active { transform: scale(.92); }

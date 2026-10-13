@@ -6,6 +6,32 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("touch navigation", () => {
 test.use({ isMobile: true, hasTouch: true });
+test("first swipe stays native, drag-select navigation works, and long press has no custom menu", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.locator("[data-home-ready=true]")).toBeAttached();
+  await expect(page.locator(".cinematic-home")).toHaveClass(/is-simple/);
+  await expect(page.locator(".cinema-static-grid img").first()).toBeVisible();
+
+  const client = await page.context().newCDPSession(page);
+  await client.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: 500 }] });
+  await client.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 195, y: 180 }] });
+  await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
+
+  await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
+  const home = page.getByRole("navigation", { name: "Bottom navigation" }).getByRole("link", { name: "Home", exact: true });
+  const pricing = page.getByRole("navigation", { name: "Bottom navigation" }).getByRole("link", { name: "Pricing", exact: true });
+  const from = await home.boundingBox(); const to = await pricing.boundingBox();
+  await home.dispatchEvent("pointerdown", { pointerId: 7, pointerType: "touch", clientX: from!.x + from!.width / 2, clientY: from!.y + from!.height / 2 });
+  await home.dispatchEvent("pointermove", { pointerId: 7, pointerType: "touch", clientX: to!.x + to!.width / 2, clientY: to!.y + to!.height / 2 });
+  await home.dispatchEvent("pointerup", { pointerId: 7, pointerType: "touch", clientX: to!.x + to!.width / 2, clientY: to!.y + to!.height / 2 });
+  await expect(page).toHaveURL(/#pricing$/);
+  await expect.poll(() => page.locator("#pricing").evaluate(element => Math.abs(element.getBoundingClientRect().top))).toBeLessThan(160);
+
+  await page.locator("body").dispatchEvent("contextmenu", { bubbles: true, cancelable: true });
+  await expect(page.locator(".context-menu")).toHaveCount(0);
+});
 for (const theme of ["dark", "light"] as const) {
   test(`mobile controls remain readable and usable in ${theme} theme`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });

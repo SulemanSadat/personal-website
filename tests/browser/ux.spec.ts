@@ -37,7 +37,7 @@ test("desktop cursor, scrollbar and direction-aware header match the studio cont
 });
 
 for (const [width, height, label] of [[1440,1000,"desktop"], [768,1024,"tablet"], [390,844,"mobile"]] as const) {
-  test(`themes, footer and home-only 3D control at ${label} size`, async ({ browser }) => {
+  test(`themes, footer and responsive project experience at ${label} size`, async ({ browser }) => {
     for (const theme of ["dark", "light"]) {
       const page = await browser.newPage({ viewport: { width, height } });
       await page.addInitScript(value => {
@@ -50,15 +50,17 @@ for (const [width, height, label] of [[1440,1000,"desktop"], [768,1024,"tablet"]
       await page.evaluate(() => document.fonts.ready);
       await page.screenshot({ path: `artifacts/ux/${label}-${theme}-home.png` });
       const mode = page.locator(".cinema-mode");
-      await expect(mode).toBeVisible();
+      if (width >= 1000) await expect(mode).toBeVisible();
+      else { await expect(mode).toHaveCount(0); await expect(page.locator(".cinema-static-grid img").first()).toBeVisible(); }
       await page.locator(width < 1100 ? ".bottom-nav a[href='/#portfolio']" : ".navigation a[href='/#portfolio']").click();
-      await expect.poll(() => page.locator(".tunnel-project:not([hidden])").count()).toBe(1);
-      await expect(page.locator(".tunnel-heading")).toHaveCSS("opacity", "0");
+      if (width >= 1000) {
+        await expect.poll(() => page.locator(".tunnel-project:not([hidden])").count()).toBe(1);
+        await expect(page.locator(".tunnel-heading")).toHaveCSS("opacity", "0");
+      } else await expect.poll(() => page.locator(".cinema-static-work").evaluate(element => Math.abs(element.getBoundingClientRect().top))).toBeLessThan(180);
       await page.mouse.move(1, height - 1);
       await page.screenshot({ path: `artifacts/ux/${label}-${theme}-work.png` });
       if (width < 1000) await expect(mode).toHaveCount(0);
-      const card = page.locator(".tunnel-project:not([hidden])");
-      if (width < 1000) await expect(page.locator(".cinema-hero-meta")).toHaveCSS("opacity", "0");
+      const card = width >= 1000 ? page.locator(".tunnel-project:not([hidden])") : page.locator(".cinema-static-grid article").first();
       if (theme === "light") await expect(card).toHaveCSS("background-color", "rgb(255, 255, 255)");
       await page.locator("#contact").scrollIntoViewIfNeeded();
       if (width < 1000) await expect(mode).toHaveCount(0);
