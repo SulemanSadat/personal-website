@@ -2,7 +2,10 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve("out");
-const requiredFiles = ["index.html", "404.html", "manifest.webmanifest", "robots.txt", "sitemap.xml", ".nojekyll", "_next"];
+const requiredFiles = [
+  "index.html", "404.html", "manifest.webmanifest", "robots.txt", "sitemap.xml", ".nojekyll", "_next",
+  "assets/Logo.png", "assets/cms.png", "assets/aziziproject.webp",
+];
 
 for (const file of requiredFiles) {
   if (!existsSync(resolve(root, file))) throw new Error(`Missing Pages export file: out/${file}`);
@@ -16,7 +19,6 @@ const expectedPrefix = "/personal-website/";
 
 for (const expected of [
   `${expectedPrefix}_next/`,
-  `${expectedPrefix}assets/`,
   "https://sulemansadat.github.io/personal-website/",
   "https://sulemansadat.github.io/personal-website/preview.jpg",
 ]) {

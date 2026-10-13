@@ -1,13 +1,13 @@
 html[data-opening="pending"] { overflow: hidden; background: #05070a; }
+html[data-opening="pending"] .site-shell { visibility: hidden; }
 html[data-opening="complete"] .studio-opening { display: none; }
 .studio-opening {
   position: fixed; inset: 0; z-index: 30000; display: grid; place-content: center; justify-items: center; gap: 16px;
-  background: #05070a; color: #f4f7fb; opacity: 1; animation: opening-exit 180ms ease 520ms both;
+  background: #05070a; color: #f4f7fb; opacity: 1;
 }
 .opening-spinner { width: 28px; height: 28px; border: 2px solid #ffffff24; border-top-color: #67a8ff; border-radius: 50%; animation: opening-spin .7s linear infinite; }
 .opening-label { font: 8px var(--font-mono, monospace); letter-spacing: .2em; color: #aab3c2; }
 :root[data-theme="light"] .studio-opening, :root[data-theme="light"][data-opening="pending"] { background: #fff; color: #131a26; }
 :root[data-theme="light"] .opening-spinner { border-color: #131a2620; border-top-color: #075dce; }
 @keyframes opening-spin { to { transform: rotate(360deg); } }
-@keyframes opening-exit { to { opacity: 0; visibility: hidden; } }
-@media (prefers-reduced-motion: reduce) { .studio-opening { animation-duration: 1ms; } .opening-spinner { animation: none; border-top-color: currentColor; } }
+@media (prefers-reduced-motion: reduce) { .opening-spinner { animation: none; border-top-color: currentColor; } }

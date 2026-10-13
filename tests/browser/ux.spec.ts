@@ -4,6 +4,9 @@ test("opening covers the first HTML paint even before application JavaScript loa
   await page.route("**/_next/**/*.js", route => route.abort());
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".studio-opening")).toBeVisible();
+  await expect(page.locator(".site-shell")).toBeHidden();
+  await expect(page.locator(".bottom-nav")).toBeHidden();
+  await expect(page.locator(".studio-opening")).toHaveCSS("background-color", "rgb(5, 7, 10)");
   expect(await page.evaluate(() => document.elementFromPoint(innerWidth / 2, innerHeight / 2)?.closest(".studio-opening") !== null)).toBe(true);
   await expect(page.locator("html")).toHaveAttribute("data-opening", "pending");
 });

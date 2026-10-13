@@ -6,7 +6,15 @@ import { projects } from '../data/projects';
 function Screens({ light }) {
   const screens = useRef([]);
   const textures = useLoader(TextureLoader, projects.map(project => project.image));
-  useEffect(() => { textures.forEach(texture => { texture.colorSpace = SRGBColorSpace; }); }, [textures]);
+  const { invalidate, gl } = useThree();
+  useEffect(() => {
+    textures.forEach(texture => { texture.colorSpace = SRGBColorSpace; texture.needsUpdate = true; });
+    // Demand rendering otherwise has no guaranteed frame after mobile texture
+    // decode/color-space setup, leaving project planes blank on some GPUs.
+    gl.domElement.setAttribute("data-project-textures", "ready");
+    invalidate();
+    return () => { gl.domElement.removeAttribute("data-project-textures"); };
+  }, [textures, invalidate, gl]);
   useFrame(({ camera }) => {
     screens.current.forEach(group => {
       if (!group) return;

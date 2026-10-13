@@ -12,6 +12,7 @@ test("first swipe stays native, drag-select navigation works, and long press has
   await expect(page.locator("[data-home-ready=true]")).toBeAttached();
   await expect(page.locator(".cinematic-home")).toHaveClass(/is-cinematic/);
   await expect(page.locator(".cinema-world canvas")).toBeVisible();
+  await expect(page.locator(".cinema-world canvas")).toHaveAttribute("data-project-textures", "ready");
   const mode = page.locator(".cinema-mode");
   await expect(mode).toHaveText("Use simple view");
   await mode.tap();
@@ -21,6 +22,14 @@ test("first swipe stays native, drag-select navigation works, and long press has
   await expect(page.locator(".cinematic-home")).toHaveClass(/is-cinematic/);
   await expect(page.locator(".cinema-world canvas")).toBeVisible();
 
+  const dock = page.getByRole("navigation", { name: "Bottom navigation" });
+  await dock.getByRole("link", { name: "Work", exact: true }).tap();
+  await expect(page).toHaveURL(/#portfolio$/);
+  await expect(page.locator(".tunnel-project:not([hidden])")).toHaveCount(1);
+  await expect(page.locator(".cinema-world canvas")).toHaveAttribute("data-project-textures", "ready");
+  await dock.getByRole("link", { name: "Home", exact: true }).tap();
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(5);
+
   const client = await page.context().newCDPSession(page);
   await client.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 195, y: 500 }] });
   await client.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 195, y: 180 }] });
@@ -29,10 +38,11 @@ test("first swipe stays native, drag-select navigation works, and long press has
   await expect(page.locator(".cinematic-home")).toHaveClass(/is-cinematic/);
 
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
-  const home = page.getByRole("navigation", { name: "Bottom navigation" }).getByRole("link", { name: "Home", exact: true });
-  const pricing = page.getByRole("navigation", { name: "Bottom navigation" }).getByRole("link", { name: "Pricing", exact: true });
+  const home = dock.getByRole("link", { name: "Home", exact: true });
+  const pricing = dock.getByRole("link", { name: "Pricing", exact: true });
   const from = await home.boundingBox(); const to = await pricing.boundingBox();
   await home.dispatchEvent("pointerdown", { pointerId: 7, pointerType: "touch", clientX: from!.x + from!.width / 2, clientY: from!.y + from!.height / 2 });
+  await page.waitForTimeout(220);
   await home.dispatchEvent("pointermove", { pointerId: 7, pointerType: "touch", clientX: to!.x + to!.width / 2, clientY: to!.y + to!.height / 2 });
   await home.dispatchEvent("pointerup", { pointerId: 7, pointerType: "touch", clientX: to!.x + to!.width / 2, clientY: to!.y + to!.height / 2 });
   await expect(page).toHaveURL(/#pricing$/);
