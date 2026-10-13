@@ -5,7 +5,8 @@ import Link from "./SectionLink";
 import { IconArrowUpRight, IconHome, IconLayoutGrid, IconStack2, IconUser, IconMail } from "@tabler/icons-react";
 import ThemeToggle from "./ThemeToggle";
 import Image from "next/image";
-const logo = "/assets/Logo.png";
+import { assetPath } from "../lib/site-path";
+const logo = assetPath("/assets/Logo.png");
 const sections = [["home", "Home", IconHome], ["portfolio", "Work", IconLayoutGrid], ["pricing", "Pricing", IconStack2], ["about", "About", IconUser], ["contact", "Contact", IconMail]];
 export default function Navbar() {
  const [hidden,setHidden]=useState(false); const [active,setActive]=useState("home"); const pathname=usePathname();

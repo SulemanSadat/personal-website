@@ -21,19 +21,22 @@ import "../styles/studio.css";
 import "../styles/FirstVisitPreloader.css";
 import FirstVisitPreloader from "../components/FirstVisitPreloader";
 import ClientApp from "./_components/ClientApp";
+import { assetPath, siteUrl } from "../lib/site-path";
+
+const socialImageUrl = new URL("preview.jpg", `${siteUrl}/`).toString();
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sulemansadat.com"),
+  metadataBase: new URL(siteUrl),
   title: { default: "Suleman Sadat | Software Engineer & Tech Entrepreneur", template: "%s | Suleman Sadat" },
   description: "Suleman Sadat is a full-stack software engineer building production-ready web applications, AI automation systems and product-focused digital experiences.",
   applicationName: "Suleman Sadat Portfolio",
   authors: [{ name: "Suleman Sadat" }],
   creator: "Suleman Sadat",
   alternates: { canonical: "/" },
-  openGraph: { type: "profile", locale: "en_GB", siteName: "Suleman Sadat Portfolio", title: "Suleman Sadat | Software Engineer & Tech Entrepreneur", description: "Full-stack software engineer building production-ready web applications, AI automation systems and product-focused digital experiences.", url: "https://sulemansadat.com", images: [{ url: "/preview.jpg", width: 1200, height: 630, alt: "Suleman Sadat software engineering portfolio" }] },
-  twitter: { card: "summary_large_image", creator: "@Suleman_Sadat_", title: "Suleman Sadat | Software Engineer & Tech Entrepreneur", description: "Full-stack software engineer building web applications, AI automation systems and product-focused digital experiences.", images: ["/preview.jpg"] },
-  icons: { icon: [{ url: "/favicon.jpg", type: "image/jpeg" }], apple: "/favicon.jpg" },
-  manifest: "/manifest.json",
+  openGraph: { type: "profile", locale: "en_GB", siteName: "Suleman Sadat Portfolio", title: "Suleman Sadat | Software Engineer & Tech Entrepreneur", description: "Full-stack software engineer building production-ready web applications, AI automation systems and product-focused digital experiences.", url: siteUrl, images: [{ url: socialImageUrl, width: 1200, height: 630, alt: "Suleman Sadat software engineering portfolio" }] },
+  twitter: { card: "summary_large_image", creator: "@Suleman_Sadat_", title: "Suleman Sadat | Software Engineer & Tech Entrepreneur", description: "Full-stack software engineer building web applications, AI automation systems and product-focused digital experiences.", images: [socialImageUrl] },
+  icons: { icon: [{ url: assetPath("/favicon.jpg"), type: "image/jpeg" }], apple: assetPath("/favicon.jpg") },
+  manifest: assetPath("/manifest.webmanifest"),
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
 };
 

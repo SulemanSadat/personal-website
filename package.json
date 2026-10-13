@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:production": "node scripts/build-production.mjs",
+    "build:pages": "node scripts/build-pages.mjs",
+    "test:pages-export": "node scripts/verify-pages-export.mjs",
     "start": "next start",
     "lint": "eslint",
     "test:browser": "playwright test"

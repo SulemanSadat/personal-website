@@ -2,10 +2,11 @@
 import { Component, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "./SectionLink";
 import Image from "next/image";
+import { assetPath } from "../lib/site-path";
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { IconArrowDown, IconArrowUpRight, IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
-const portrait = "/assets/Confident Tech Founder in Black Outfit.png";
+const portrait = assetPath("/assets/Confident Tech Founder in Black Outfit.png");
 import { projects } from '../data/projects';
 import Testimonials from './Testimonials';
 import Pricing from '../app/pages/Pricing';

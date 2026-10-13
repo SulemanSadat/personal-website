@@ -1,11 +1,12 @@
-const cms="/assets/cms.png";
-const bot="/assets/bot.jpg";
-const automation="/assets/automation.png";
-const ariatiles="/assets/ariatiles.png";
-const mobileapp="/assets/mobileapp.jpg";
-const upworkAccelerator="/assets/upworkAccelerator.png";
-const aziziProject="/assets/aziziproject.webp";
-const Healthcare="/assets/Healthcare.png";
+import { assetPath } from "../lib/site-path";
+const cms=assetPath("/assets/cms.png");
+const bot=assetPath("/assets/bot.jpg");
+const automation=assetPath("/assets/automation.png");
+const ariatiles=assetPath("/assets/ariatiles.png");
+const mobileapp=assetPath("/assets/mobileapp.jpg");
+const upworkAccelerator=assetPath("/assets/upworkAccelerator.png");
+const aziziProject=assetPath("/assets/aziziproject.webp");
+const Healthcare=assetPath("/assets/Healthcare.png");
 
 export const allProjects = [
     {

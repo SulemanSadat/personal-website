@@ -3,12 +3,13 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
 import { IconPlayerPause as FiPause } from "@tabler/icons-react";
-const Helmand = "/assets/Customers/Helmand Photo.jpg";
-const BilalKakar = "/assets/Customers/BilalKakar.jpg";
-const AzizRastegari = "/assets/Customers/AzizRastegari.jpg";
+import { assetPath } from "../lib/site-path";
+const Helmand = assetPath("/assets/Customers/Helmand Photo.jpg");
+const BilalKakar = assetPath("/assets/Customers/BilalKakar.jpg");
+const AzizRastegari = assetPath("/assets/Customers/AzizRastegari.jpg");
 // import Asadullah from "../assets/Customers/Asadullah.jpg";
-const Mahdi = "/assets/Customers/Mahdi.jpg";
-const NematullahKhan = "/assets/Customers/Nematullah - Azizi Jewellery.jpg";
+const Mahdi = assetPath("/assets/Customers/Mahdi.jpg");
+const NematullahKhan = assetPath("/assets/Customers/Nematullah - Azizi Jewellery.jpg");
 
 
 

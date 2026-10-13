@@ -2,7 +2,8 @@
 import { useRouter } from "next/navigation";
 import { createElement, useEffect, useRef, useState } from "react";
 import { IconCheck, IconCopy, IconDownload, IconRefresh, IconSend, IconTerminal2 } from "@tabler/icons-react";
-const resume="/assets/Suleman_Sadat.pdf"; const menuSize={width:276,baseHeight:262,selectionHeight:356,edge:14};
+import { assetPath } from "../lib/site-path";
+const resume=assetPath("/assets/Suleman_Sadat.pdf"); const menuSize={width:276,baseHeight:262,selectionHeight:356,edge:14};
 export default function ContextMenu(){const router=useRouter();const menuRef=useRef(null);const triggerRef=useRef(null);const copiedTimerRef=useRef(null);const[menu,setMenu]=useState(null);const[notice,setNotice]=useState("");const[copied,setCopied]=useState(false);const shortcut = typeof navigator !== "undefined" && navigator.platform.toLowerCase().includes("mac") ? "⌥⌘I" : "Ctrl + Shift + I";
 
  const closeMenu=({restoreFocus=false}={})=>{window.clearTimeout(copiedTimerRef.current);setCopied(false);setMenu(null);if(restoreFocus)requestAnimationFrame(()=>triggerRef.current?.focus?.())};

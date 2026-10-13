@@ -1,7 +1,8 @@
 import { IconArrowUpRight as FiArrowUpRight, IconCode as FiCode, IconWorld as FiGlobe, IconLayersIntersect as FiLayers } from "@tabler/icons-react";
 import Image from "next/image";
-const suleman = "/assets/sulemansadat.jpg";
-const CV = "/assets/Suleman_Sadat.pdf";
+import { assetPath } from "../lib/site-path";
+const suleman = assetPath("/assets/sulemansadat.jpg");
+const CV = assetPath("/assets/Suleman_Sadat.pdf");
 import SkillsShowcase from "./SkillsShowcase";
 
 export default function About({ embedded = false }) {
