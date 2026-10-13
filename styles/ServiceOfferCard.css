@@ -1,0 +1,32 @@
+.service-offer { min-width: 0; display: flex; flex-direction: column; padding: clamp(24px,3vw,34px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); transition: border-color 200ms var(--ease), background-color 200ms var(--ease); }
+.service-offer:hover { border-color: var(--line-strong); }
+.service-offer-kicker { display: flex; align-items: center; gap: 10px; font: 10px var(--font-mono); color: var(--accent); margin-bottom: 20px; }
+.service-offer-kicker svg { width: 32px; height: 32px; padding: 7px; background: var(--accent-soft); border-radius: 9px; }
+.service-offer h3 { font-size: clamp(23px,2.5vw,29px); }
+.service-offer-description { color: var(--muted); font-size: 13px; margin: 12px 0 22px; max-width: 36ch; }
+.service-offer-price { font-size: 46px; font-weight: 600; line-height: 1.2; letter-spacing: -.05em; }
+.service-offer-price > span { color: var(--muted); font-size: 12px; font-weight: 400; letter-spacing: 0; margin-left: 10px; }
+.service-offer-session { display: flex; gap: 8px; align-items: center; color: var(--accent); font-size: 11px; margin-top: 16px; }
+.service-offer-details { display: flex; flex-direction: column; flex: 1; padding-top: 26px; margin-top: 26px; border-top: 1px solid var(--line); }
+.service-offer h4 { font-size: 12px; letter-spacing: 0; font-weight: 600; margin-bottom: 14px; }
+.service-offer ul { list-style: none; display: grid; gap: 12px; margin-bottom: 22px; }
+.service-offer li { display: flex; align-items: start; gap: 10px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+.service-offer li svg { color: var(--success); margin-top: 3px; }
+.service-offer-note, .service-offer-action p { font-size: 11px; color: var(--subtle); line-height: 1.8; }
+.service-offer-note { margin-bottom: 20px; }
+.service-offer-action { margin-top: auto; padding-top: 4px; }
+.service-offer-action .button-primary { width: 100%; }
+.service-offer-action p { text-align: center; margin-top: 12px; }
+.service-offer--shopify { display: grid; grid-template-columns: .85fr 1.15fr; gap: 44px; margin-top: 24px; background: var(--canvas); }
+.service-offer--shopify .service-offer-details { border-top: 0; border-left: 1px solid var(--line); padding: 0 0 0 36px; margin: 0; }
+.service-offer--shopify .service-offer-action .button-primary { width: auto; }
+.offer-assurance { display: flex; align-items: center; gap: 8px; color: var(--success); font-size: 11px; margin-top: 26px; }
+.offer-countdown { margin-top: 22px; max-width: 320px; }
+.offer-countdown-heading { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--accent); }
+.offer-clock { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; margin-top: 12px; }
+.offer-clock > div { display: grid; gap: 5px; text-align: center; padding: 10px 5px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface); }
+.offer-clock strong { font: 24px var(--font-mono); font-variant-numeric: tabular-nums; }
+.offer-clock span { font: 8px var(--font-mono); text-transform: uppercase; color: var(--muted); }
+.offer-countdown > p, .offer-ended { color: var(--subtle); font-size: 10px; margin-top: 12px; }
+.p2__consultationGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 22px; max-width: 970px; margin-inline: auto; }
+@media(max-width:700px) { .p2__consultationGrid, .service-offer--shopify { grid-template-columns: 1fr; gap: 22px; } .service-offer--shopify .service-offer-details { border-left: 0; border-top: 1px solid var(--line); padding: 24px 0 0; } .service-offer--shopify .service-offer-action .button-primary { width: 100%; } }

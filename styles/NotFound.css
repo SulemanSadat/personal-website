@@ -1,0 +1,24 @@
+.site-main--notfound { min-height: calc(100svh - 88px); }
+.notfound { position: relative; isolation: isolate; min-height: calc(100svh - 88px); display: grid; place-items: center; overflow: hidden; padding: clamp(92px, 12vw, 144px) max(var(--gutter), 7vw); background: radial-gradient(ellipse at 50% 46%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 47%); }
+.notfound::before, .notfound::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
+.notfound::before { inset: 0; opacity: .7; background-image: linear-gradient(to right, color-mix(in srgb, var(--ink) 6%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in srgb, var(--ink) 6%, transparent) 1px, transparent 1px); background-size: clamp(42px, 5vw, 72px) clamp(42px, 5vw, 72px); mask-image: radial-gradient(ellipse at center, black, transparent 76%); }
+.notfound::after { width: min(54vw, 700px); aspect-ratio: 1; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 0 12vw color-mix(in srgb, var(--accent) 2%, transparent), 0 0 90px color-mix(in srgb, var(--accent) 16%, transparent); }
+.notfound__content { width: min(100%, 660px); text-align: center; }
+.notfound__kicker { display: inline-flex; align-items: center; gap: 9px; color: var(--accent); font: 9px var(--font-mono); letter-spacing: .17em; }
+.notfound__kicker i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 14px currentColor; }
+.notfound__code { display: flex; justify-content: center; margin: clamp(16px, 3vh, 28px) 0 0; color: var(--ink); font-size: clamp(138px, 27vw, 310px); font-weight: 600; line-height: .72; letter-spacing: -.105em; overflow: hidden; text-shadow: 0 0 50px color-mix(in srgb, var(--accent) 16%, transparent); }
+.notfound__code span:nth-child(2) { color: var(--accent); }
+.notfound__title { margin: clamp(28px, 5vh, 48px) auto 0; max-width: 12ch; font-size: clamp(36px, 5vw, 66px); line-height: .96; }
+.notfound__title em { color: var(--accent); font-style: normal; }
+.notfound__desc { max-width: 47ch; margin: 20px auto 0; color: var(--muted); font-size: 14px; line-height: 1.75; }
+.notfound__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 30px; }
+.notfound__btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 48px; padding: 12px 18px; border: 1px solid color-mix(in srgb, var(--ink) 24%, transparent); font-size: 12px; font-weight: 650; transition: transform .25s var(--ease), background-color .25s, border-color .25s; }
+.notfound__btn:hover { transform: translateY(-2px); }
+.notfound__btn--primary { color: var(--button-ink); background: var(--button); border-color: var(--button); }
+.notfound__btn--quiet { color: var(--ink); background: color-mix(in srgb, var(--surface) 72%, transparent); }
+.notfound__btn--quiet:hover { border-color: var(--accent); color: var(--accent); }
+.notfound__glow { position: absolute; z-index: -1; width: min(70vw, 900px); aspect-ratio: 2.3; bottom: -32%; left: 50%; transform: translateX(-50%); background: radial-gradient(ellipse, color-mix(in srgb, var(--accent) 17%, transparent), transparent 68%); filter: blur(18px); }
+.notfound__axis { position: absolute; inset: auto max(var(--gutter), 5vw) 30px; display: flex; justify-content: space-between; color: var(--subtle); font: 8px var(--font-mono); letter-spacing: .12em; }
+@media (max-width: 1099px) { .site-shell.is-notfound { padding-bottom: 0; } .site-main--notfound, .notfound { min-height: 100svh; } .notfound { padding: max(92px, calc(env(safe-area-inset-top, 0px) + 74px)) 20px calc(104px + env(safe-area-inset-bottom, 0px)); } }
+@media (max-width: 520px) { .notfound__code { font-size: clamp(122px, 34vw, 172px); } .notfound__title { margin-top: 30px; font-size: clamp(34px, 10vw, 46px); } .notfound__desc { font-size: 13px; } .notfound__actions { margin-top: 26px; } .notfound__btn { flex: 1 1 150px; } .notfound__axis { bottom: 100px; } }
+@media (prefers-reduced-motion: reduce) { .notfound__btn { transition: none; } }

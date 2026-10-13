@@ -1,0 +1,31 @@
+.context-menu { position: fixed; z-index: 3000; width: min(276px, calc(100vw - 28px)); overflow: hidden; border: 1px solid var(--line-strong); background: var(--surface); box-shadow: 8px 8px 0 var(--accent-glow); transform-origin: top left; animation: context-menu-in 180ms var(--ease) both; }
+.context-menu::before { content: ""; position: absolute; inset: 0 0 auto; height: 2px; background: var(--accent); transform-origin: left; animation: context-rule-in 360ms var(--ease) 65ms both; }
+.context-menu__heading, .context-menu__footer { display: flex; align-items: center; justify-content: space-between; padding-inline: 14px; font: 9px/1 var(--font-mono); letter-spacing: .08em; }
+.context-menu__heading { height: 40px; color: var(--muted); border-bottom: 1px solid var(--line); }
+.context-menu__heading span:last-child { color: var(--ink); font-size: 12px; }
+.context-menu__items { padding: 5px; }
+.context-menu__selection-group { margin-top: 5px; padding-top: 5px; border-top: 1px solid var(--line); animation: context-share-in 220ms var(--ease) 55ms both; }
+.context-menu__section-label { display: block; padding: 5px 9px 6px; color: var(--muted); font: 8px var(--font-mono); letter-spacing: .08em; }
+.context-menu__item--selection .context-menu__icon { border-radius: 50%; }
+.context-menu__item--copied { color: var(--accent-ink); }
+.context-menu__item--copied::before { transform: scaleX(1); }
+.context-menu__item--copied .context-menu__icon { border-color: currentColor; animation: context-copied-pop 320ms var(--ease) both; }
+.context-menu__item--copied .context-menu__copy small { color: inherit; opacity: .72; }
+.context-menu__item { position: relative; isolation: isolate; width: 100%; min-height: 46px; display: flex; align-items: center; gap: 11px; padding: 7px 9px; border: 0; background: transparent; color: var(--ink); text-align: left; transition: color 140ms ease; }
+.context-menu__item::before { content: ""; position: absolute; z-index: -1; inset: 0; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 180ms var(--ease); }
+.context-menu__item:hover, .context-menu__item:focus-visible { color: var(--accent-ink); outline: none; }
+.context-menu__item:hover::before, .context-menu__item:focus-visible::before { transform: scaleX(1); }
+.context-menu__icon { display: grid; place-items: center; width: 29px; height: 29px; border: 1px solid var(--line); transition: border-color 140ms ease, transform 180ms var(--ease); }
+.context-menu__item:hover .context-menu__icon, .context-menu__item:focus-visible .context-menu__icon { border-color: currentColor; transform: rotate(-8deg); }
+.context-menu__copy { display: grid; gap: 1px; min-width: 0; font-size: 12px; font-weight: 600; letter-spacing: -.02em; }
+.context-menu__copy small { color: var(--muted); font: 8px var(--font-mono); letter-spacing: .02em; transition: color 140ms ease; }
+.context-menu__item:hover .context-menu__copy small, .context-menu__item:focus-visible .context-menu__copy small { color: inherit; opacity: .72; }
+.context-menu__mark { margin-left: auto; font-size: 15px; opacity: 0; transform: translate(-4px, 4px); transition: opacity 140ms ease, transform 180ms var(--ease); }
+.context-menu__item:hover .context-menu__mark, .context-menu__item:focus-visible .context-menu__mark { opacity: 1; transform: translate(0, 0); }
+.context-menu__footer { height: 31px; border-top: 1px solid var(--line); color: var(--muted); font-size: 8px; }
+.context-menu__footer span:first-child { color: var(--ink); border: 1px solid var(--line); padding: 2px 4px; }
+@keyframes context-menu-in { from { opacity: 0; transform: translateY(5px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes context-rule-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes context-share-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes context-copied-pop { 0% { transform: scale(.78) rotate(-18deg); } 65% { transform: scale(1.16) rotate(4deg); } 100% { transform: scale(1) rotate(0); } }
+@media (max-width: 480px) { .context-menu { box-shadow: 5px 5px 0 color-mix(in srgb, var(--ink) 12%, transparent); } }

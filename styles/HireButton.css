@@ -1,0 +1,29 @@
+.ghbRoot { position: relative; min-width: 124px; overflow: hidden; }
+.ghbRoot svg { transition: transform 180ms var(--ease); }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) { .ghbRoot:hover svg { transform: translate(2px,-2px); } }
+
+@media (max-width: 999px) {
+  .cinema-actions .ghbRoot {
+    --hire-top: #216bd1;
+    --hire-bottom: #174da2;
+    --hire-edge: #75adff80;
+    --hire-shadow: #1260c433;
+    min-height: 46px; padding: 11px 17px; gap: 22px; border-radius: 13px;
+    border-color: var(--hire-edge); color: #ffffff;
+    background: linear-gradient(145deg, var(--hire-top), var(--hire-bottom));
+    box-shadow: 0 5px 16px var(--hire-shadow), inset 0 1px 0 #ffffff30, inset 0 -1px 0 #05265730;
+    font-weight: 650; letter-spacing: .01em;
+  }
+  :root[data-theme="light"] .cinema-actions .ghbRoot {
+    --hire-top: #1263cb;
+    --hire-bottom: #0b4aa4;
+    --hire-edge: #0b56b8;
+    --hire-shadow: #075dce26;
+  }
+  .cinema-actions .ghbRoot:hover {
+    color: #ffffff; border-color: var(--hire-edge);
+    background: linear-gradient(145deg, var(--hire-top), var(--hire-bottom));
+    box-shadow: 0 7px 20px var(--hire-shadow), inset 0 1px 0 #ffffff40;
+  }
+  .cinema-actions .ghbRoot:active { box-shadow: 0 2px 7px var(--hire-shadow), inset 0 1px 3px #05265730; }
+}

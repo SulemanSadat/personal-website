@@ -6,14 +6,34 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:browser": "playwright test"
   },
   "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
+    "@react-three/fiber": "^9.8.1",
+    "@reduxjs/toolkit": "^2.13.0",
+    "@tabler/icons-react": "^3.49.0",
+    "emailjs-com": "^3.2.0",
+    "framer-motion": "^14.1.0",
+    "goey-toast": "^0.5.0",
+    "gsap": "^3.15.0",
     "next": "16.4.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "react-hot-toast": "^2.6.1",
+    "react-icons": "^5.7.0",
+    "react-intersection-observer": "^11.0.1",
+    "react-redux": "^9.3.0",
+    "react-scroll": "^1.9.3",
+    "react-simple-typewriter": "^5.0.1",
+    "react-typed": "^2.0.12",
+    "three": "^0.186.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
