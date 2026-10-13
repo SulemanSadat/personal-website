@@ -14,22 +14,40 @@ export default function FirstVisitPreloader() {
       return () => cancelAnimationFrame(hiddenFrame);
     }
     let frame = 0;
+    let revealFrame = 0;
+    let revealTimer = 0;
+    let cancelled = false;
     let finished = false;
-    const dismiss = () => {
+    const reveal = () => {
       if (finished) return;
       finished = true;
       markOpeningSeenThisSession();
-      document.documentElement.dataset.opening = "complete";
-      frame = requestAnimationFrame(() => setVisible(false));
+      document.documentElement.dataset.opening = "revealing";
+      frame = requestAnimationFrame(() => {
+        revealFrame = requestAnimationFrame(() => {
+          revealTimer = window.setTimeout(() => {
+            document.documentElement.dataset.opening = "complete";
+            setVisible(false);
+          }, 240);
+        });
+      });
+    };
+    const revealWhenVisuallyReady = async () => {
+      try { await document.fonts?.ready; }
+      catch { /* The fallback font is ready to render. */ }
+      if (!cancelled) reveal();
     };
     const hero = document.querySelector("[data-hero-essential]");
-    if (document.documentElement.dataset.heroReady === "true" || (hero?.complete && hero.naturalWidth > 0)) dismiss();
-    else window.addEventListener("hero-essential-ready", dismiss, { once: true });
-    const failsafe = window.setTimeout(dismiss, MAX_WAIT_MS);
+    if (document.documentElement.dataset.heroReady === "true" || (hero?.complete && hero.naturalWidth > 0)) revealWhenVisuallyReady();
+    else window.addEventListener("hero-essential-ready", revealWhenVisuallyReady, { once: true });
+    const failsafe = window.setTimeout(reveal, MAX_WAIT_MS);
     return () => {
-      window.removeEventListener("hero-essential-ready", dismiss);
+      cancelled = true;
+      window.removeEventListener("hero-essential-ready", revealWhenVisuallyReady);
       window.clearTimeout(failsafe);
+      window.clearTimeout(revealTimer);
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(revealFrame);
     };
   }, []);
 

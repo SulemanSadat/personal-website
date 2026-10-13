@@ -23,6 +23,11 @@
 .mega-footer-name { position: absolute; z-index: 1; left: 50%; bottom: clamp(34px, 4.2vw, 76px); width: max-content; margin: 0; transform: translateX(-50%); white-space: nowrap; color: transparent; font-size: clamp(92px, 12.15vw, 224px); font-weight: 650; line-height: .76; letter-spacing: -.092em; background: linear-gradient(105deg, color-mix(in srgb, var(--ink) 88%, transparent), color-mix(in srgb, var(--ink) 51%, var(--accent) 49%) 49%, color-mix(in srgb, var(--ink) 76%, transparent)); -webkit-background-clip: text; background-clip: text; -webkit-text-stroke: 1px color-mix(in srgb, var(--ink) 23%, transparent); opacity: .92; text-shadow: 0 0 35px var(--accent-glow); will-change: transform, opacity; }
 @media (prefers-reduced-motion: no-preference) { .mega-footer-name { transition: text-shadow 400ms var(--ease); } .mega-footer:hover .mega-footer-name { text-shadow: 0 0 48px var(--accent-glow); } }
 @media (max-width: 820px) { .footer-main { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 30px; } .footer-brand-section { grid-column: 1/-1; } }
+@media (min-width: 821px) {
+  .site-shell .footer-brand-tagline { max-width: 52ch; color: color-mix(in srgb, var(--ink) 72%, var(--muted)); font-size: 15px; line-height: 1.75; }
+  .footer-nav-link { font-size: 14px; line-height: 1.55; }
+  .copyright-text { font-size: 12px; line-height: 1.6; }
+}
 @media (max-width: 767px) { .mega-footer { display: none; } }
 @media (max-width: 400px) { .footer-main { grid-template-columns: 1fr; } .mega-footer-meta span:first-child { max-width: 190px; } }
 

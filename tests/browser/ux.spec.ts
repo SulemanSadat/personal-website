@@ -22,11 +22,13 @@ test("cold mobile load waits for the essential portrait and defers 3D work", asy
   await page.goto("/", { waitUntil: "commit" });
   await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeVisible();
   await expect(page.locator(".site-shell")).toBeHidden();
+  await expect(page.getByText("Loading page…")).toBeHidden();
   await expect(page.locator(".cinema-world canvas")).toHaveCount(0);
   releasePortrait();
   await expect(page.locator(".cinema-portrait img")).toHaveJSProperty("complete", true);
   await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeHidden();
   await expect(page.locator(".site-shell")).toBeVisible();
+  expect(await page.locator(".cinema-portrait img").evaluate(image => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await expect(page.locator(".cinema-world canvas")).toBeVisible({ timeout: 30000 });
   await context.close();
 });
@@ -56,6 +58,8 @@ test("desktop cursor, scrollbar and direction-aware header match the studio cont
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollHeight - innerHeight - scrollY)).toBeLessThan(5);
   await expect(page.locator(".footer-brand-name")).toBeVisible();
   await expect(page.locator(".footer-main")).toHaveCSS("display", "grid");
+  await expect(page.locator(".footer-brand-tagline")).toHaveCSS("font-size", "15px");
+  await expect(page.locator(".footer-brand-tagline")).toHaveCSS("line-height", "26.25px");
   expect(errors).toEqual([]);
 });
 

@@ -46,6 +46,11 @@ export default function CinematicHome() {
     document.documentElement.dataset.heroReady = 'true';
     window.dispatchEvent(new Event('hero-essential-ready'));
   };
+  const decodeHero = async event => {
+    try { await event.currentTarget.decode(); }
+    catch { /* A loaded image can still be painted when decode() is unavailable. */ }
+    markHeroReady();
+  };
   useEffect(() => {
     const update = () => setHomeVisible(window.scrollY < window.innerHeight * .6);
     const observer = new IntersectionObserver(update);
@@ -211,7 +216,7 @@ export default function CinematicHome() {
         <div className="cinema-hero-meta"><span>INDEPENDENT SOFTWARE ENGINEER</span><span><i /> AVAILABLE FOR SELECT PROJECTS</span></div>
         <div className="cinema-halo" aria-hidden="true" />
         <h1 className="cinema-hero-name">SULEMAN<span>SADAT<span className="cinema-period">.</span></span></h1>
-        <div className="cinema-portrait"><Image src={portrait} alt="Suleman Sadat standing with crossed arms in a black suit" width={1024} height={1536} sizes="(max-width: 999px) 76vw, 50vw" preload data-hero-essential onLoad={markHeroReady} onError={markHeroReady} /></div>
+        <div className="cinema-portrait"><Image src={portrait} alt="Suleman Sadat standing with crossed arms in a black suit" width={1024} height={1536} sizes="(max-width: 999px) 76vw, 50vw" preload data-hero-essential onLoad={decodeHero} onError={markHeroReady} /></div>
         <div className="cinema-story">
           <div className="cinema-hero-copy cinema-copy-left"><span className="cinema-kicker">HELLO, I’M SULEMAN.</span><p>Software Engineer<br />Full-Stack Developer</p></div>
           <div className="cinema-hero-copy cinema-copy-right" inert={heroInert}><span className="cinema-cross" aria-hidden="true">+</span><p className="cinema-mobile-statement">Building digital products. Bringing startups to life.</p><div className="cinema-actions"><HireButton /><Link href="/#portfolio">Explore My Work <IconArrowUpRight size={17} /></Link></div></div>

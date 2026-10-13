@@ -59,6 +59,9 @@ test("first visit opening is session-scoped and favicon points at the reference 
   await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeVisible({ timeout: 30000 });
   await expect(page.locator("link[rel=icon]").first()).toHaveAttribute("href", /favicon\.jpg/);
   await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeHidden({ timeout: 10000 });
+  await expect(page.locator(".cinema-portrait img")).toHaveJSProperty("complete", true);
+  expect(await page.evaluate(() => document.fonts.status)).toBe("loaded");
+  await expect(page.getByText("Loading page…")).toHaveCount(0);
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.getByRole("status", { name: "Loading portfolio" })).toHaveCount(0);
   await context.close();
