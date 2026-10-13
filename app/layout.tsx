@@ -45,7 +45,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <head>
       <link rel="preconnect" href="https://api.fontshare.com" />
       <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" />
-      <script dangerouslySetInnerHTML={{ __html: `(function(){var h=document.documentElement;h.dataset.opening="pending";try{if(sessionStorage.getItem("suleman-studio-opening-v1")==="seen")h.dataset.opening="complete";}catch{}try{h.dataset.theme=localStorage.getItem("suleman-portfolio-theme")==="light"?"light":"dark";}catch{h.dataset.theme="dark";}setTimeout(function(){h.dataset.opening="complete"},1800);}());` }} />
+      <script dangerouslySetInnerHTML={{ __html: `(function(){var h=document.documentElement;h.dataset.opening="pending";try{if(sessionStorage.getItem("suleman-studio-opening-v1")==="seen")h.dataset.opening="complete";}catch{}try{h.dataset.theme=localStorage.getItem("suleman-portfolio-theme")==="light"?"light":"dark";}catch{h.dataset.theme="dark";}setTimeout(function(){h.dataset.opening="complete"},7500);}());` }} />
     </head>
     <body><FirstVisitPreloader /><ClientApp>{children}</ClientApp><noscript><style>{'.studio-opening{display:none!important}html[data-opening="pending"]{overflow:auto}'}</style></noscript></body>
   </html>;

@@ -6,7 +6,7 @@ import { assetPath } from "../lib/site-path";
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { IconArrowDown, IconArrowUpRight, IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
-const portrait = assetPath("/assets/Confident Tech Founder in Black Outfit.png");
+const portrait = assetPath("/assets/hero-portrait.webp");
 import { projects } from '../data/projects';
 import Testimonials from './Testimonials';
 import Pricing from '../app/pages/Pricing';
@@ -37,8 +37,15 @@ export default function CinematicHome() {
   const [heroInert, setHeroInert] = useState(false);
   const [mobile, setMobile] = useState(false);
   const [homeVisible, setHomeVisible] = useState(true);
+  const [heroReady, setHeroReady] = useState(false);
   const [theme, setTheme] = useState('dark');
   const cinematic = capable && !simple;
+  const markHeroReady = () => {
+    setHeroReady(true);
+    if (document.documentElement.dataset.heroReady === 'true') return;
+    document.documentElement.dataset.heroReady = 'true';
+    window.dispatchEvent(new Event('hero-essential-ready'));
+  };
   useEffect(() => {
     const update = () => setHomeVisible(window.scrollY < window.innerHeight * .6);
     const observer = new IntersectionObserver(update);
@@ -55,7 +62,7 @@ export default function CinematicHome() {
   }, []);
 
   useEffect(() => {
-    if (capable === null) return;
+    if (capable === null || (cinematic && !heroReady)) return;
     const navigate = event => {
       if (event.detail.id !== 'portfolio' || !sceneTrigger.current) return;
       event.preventDefault();
@@ -73,7 +80,7 @@ export default function CinematicHome() {
       window.dispatchEvent(new Event('homepage-ready'));
     });
     return () => { cancelAnimationFrame(frame); window.removeEventListener('section-navigation', navigate); homeRoot?.removeAttribute('data-home-ready'); };
-  }, [capable, cinematic, mobile]);
+  }, [capable, cinematic, heroReady, mobile]);
 
   useEffect(() => {
     const sync = () => setTheme(document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
@@ -102,7 +109,7 @@ export default function CinematicHome() {
   }, []);
 
   useLayoutEffect(() => {
-    if (!cinematic) return;
+    if (!cinematic || !heroReady) return;
     const journeyProgress = progress.current;
     journeyProgress.onFailure = () => setSimple(true);
     let last = -1;
@@ -146,7 +153,7 @@ export default function CinematicHome() {
         .fromTo('.tunnel-exit', { opacity: 0, scale: .8 }, { opacity: 1, scale: 1, duration: .06 }, .94);
     }, root);
     return () => { context.revert(); sceneTrigger.current = null; journeyProgress.value = 0; setHeroInert(false); };
-    }, [cinematic, mobile]);
+    }, [cinematic, heroReady, mobile]);
 
   useEffect(() => {
     if (!cinematic || introDone) return;
@@ -199,12 +206,12 @@ export default function CinematicHome() {
     <div className="cinema-sequence" id="home">
       <span id="portfolio" className="cinema-work-anchor" />
       <section ref={stage} className="cinema-stage" aria-label="Introduction and project journey">
-        {cinematic && <div className="cinema-world"><SceneBoundary onFailure={() => setSimple(true)}><Suspense fallback={null}><World progress={progress} theme={theme} mobile={mobile} /></Suspense></SceneBoundary></div>}
+        {cinematic && heroReady && <div className="cinema-world"><SceneBoundary onFailure={() => setSimple(true)}><Suspense fallback={null}><World progress={progress} theme={theme} mobile={mobile} /></Suspense></SceneBoundary></div>}
         <div className="cinema-vignette" aria-hidden="true" />
         <div className="cinema-hero-meta"><span>INDEPENDENT SOFTWARE ENGINEER</span><span><i /> AVAILABLE FOR SELECT PROJECTS</span></div>
         <div className="cinema-halo" aria-hidden="true" />
         <h1 className="cinema-hero-name">SULEMAN<span>SADAT<span className="cinema-period">.</span></span></h1>
-        <div className="cinema-portrait"><Image src={portrait} alt="Suleman Sadat standing with crossed arms in a black suit" width={1024} height={1536} priority /></div>
+        <div className="cinema-portrait"><Image src={portrait} alt="Suleman Sadat standing with crossed arms in a black suit" width={1024} height={1536} sizes="(max-width: 999px) 76vw, 50vw" preload data-hero-essential onLoad={markHeroReady} onError={markHeroReady} /></div>
         <div className="cinema-story">
           <div className="cinema-hero-copy cinema-copy-left"><span className="cinema-kicker">HELLO, I’M SULEMAN.</span><p>Software Engineer<br />Full-Stack Developer</p></div>
           <div className="cinema-hero-copy cinema-copy-right" inert={heroInert}><span className="cinema-cross" aria-hidden="true">+</span><p className="cinema-mobile-statement">Building digital products. Bringing startups to life.</p><div className="cinema-actions"><HireButton /><Link href="/#portfolio">Explore My Work <IconArrowUpRight size={17} /></Link></div></div>

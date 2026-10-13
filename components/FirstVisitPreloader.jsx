@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { hasSeenOpeningThisSession, markOpeningSeenThisSession } from "../utils/firstVisitPreloader";
 
-const DISPLAY_MS = 520;
+const MAX_WAIT_MS = 6500;
 
 export default function FirstVisitPreloader() {
   const [visible, setVisible] = useState(true);
@@ -13,25 +13,21 @@ export default function FirstVisitPreloader() {
       const hiddenFrame = requestAnimationFrame(() => setVisible(false));
       return () => cancelAnimationFrame(hiddenFrame);
     }
-    markOpeningSeenThisSession();
-    const started = performance.now();
-    let timer;
-    let frame;
+    let frame = 0;
+    let finished = false;
     const dismiss = () => {
-      timer = window.setTimeout(() => {
-        document.documentElement.dataset.opening = "complete";
-        frame = requestAnimationFrame(() => setVisible(false));
-      }, Math.max(0, DISPLAY_MS - (performance.now() - started)));
-    };
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", dismiss, { once: true });
-    else dismiss();
-    const failsafe = window.setTimeout(() => {
+      if (finished) return;
+      finished = true;
+      markOpeningSeenThisSession();
       document.documentElement.dataset.opening = "complete";
-      setVisible(false);
-    }, 1400);
+      frame = requestAnimationFrame(() => setVisible(false));
+    };
+    const hero = document.querySelector("[data-hero-essential]");
+    if (document.documentElement.dataset.heroReady === "true" || (hero?.complete && hero.naturalWidth > 0)) dismiss();
+    else window.addEventListener("hero-essential-ready", dismiss, { once: true });
+    const failsafe = window.setTimeout(dismiss, MAX_WAIT_MS);
     return () => {
-      document.removeEventListener("DOMContentLoaded", dismiss);
-      window.clearTimeout(timer);
+      window.removeEventListener("hero-essential-ready", dismiss);
       window.clearTimeout(failsafe);
       cancelAnimationFrame(frame);
     };

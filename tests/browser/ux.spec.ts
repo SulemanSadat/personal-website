@@ -13,6 +13,24 @@ test("opening covers the first HTML paint even before application JavaScript loa
   await expect(page.locator("html")).toHaveAttribute("data-opening", "pending");
 });
 
+test("cold mobile load waits for the essential portrait and defers 3D work", async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const page = await context.newPage();
+  let releasePortrait = () => {};
+  const portraitGate = new Promise<void>(resolve => { releasePortrait = resolve; });
+  await page.route(/hero-portrait\.webp/, async route => { await portraitGate; await route.continue(); });
+  await page.goto("/", { waitUntil: "commit" });
+  await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeVisible();
+  await expect(page.locator(".site-shell")).toBeHidden();
+  await expect(page.locator(".cinema-world canvas")).toHaveCount(0);
+  releasePortrait();
+  await expect(page.locator(".cinema-portrait img")).toHaveJSProperty("complete", true);
+  await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeHidden();
+  await expect(page.locator(".site-shell")).toBeVisible();
+  await expect(page.locator(".cinema-world canvas")).toBeVisible({ timeout: 30000 });
+  await context.close();
+});
+
 test("desktop cursor, scrollbar and direction-aware header match the studio controls", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.addInitScript(() => sessionStorage.setItem("suleman-studio-opening-v1", "seen"));

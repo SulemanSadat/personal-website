@@ -45,9 +45,14 @@ test("first swipe stays native, drag-select navigation works, and long press has
   await home.dispatchEvent("pointerdown", { pointerId: 7, pointerType: "touch", clientX: from!.x + from!.width / 2, clientY: from!.y + from!.height / 2 });
   await page.waitForTimeout(220);
   await home.dispatchEvent("pointermove", { pointerId: 7, pointerType: "touch", clientX: to!.x + to!.width / 2, clientY: to!.y + to!.height / 2 });
-  await home.dispatchEvent("pointerup", { pointerId: 7, pointerType: "touch", clientX: to!.x + to!.width / 2, clientY: to!.y + to!.height / 2 });
   await expect(page).toHaveURL(/#pricing$/);
   await expect.poll(() => page.locator("#pricing").evaluate(element => Math.abs(element.getBoundingClientRect().top))).toBeLessThan(160);
+  await expect(pricing).toHaveAttribute("data-drag-active", "true");
+  const historyLength = await page.evaluate(() => history.length);
+  await home.dispatchEvent("pointermove", { pointerId: 7, pointerType: "touch", clientX: to!.x + to!.width / 2, clientY: to!.y + to!.height / 2 });
+  expect(await page.evaluate(() => history.length)).toBe(historyLength);
+  await home.dispatchEvent("pointerup", { pointerId: 7, pointerType: "touch", clientX: to!.x + to!.width / 2, clientY: to!.y + to!.height / 2 });
+  await expect(page).toHaveURL(/#pricing$/);
 
   await page.locator("body").dispatchEvent("contextmenu", { bubbles: true, cancelable: true });
   await expect(page.locator(".context-menu")).toHaveCount(0);
