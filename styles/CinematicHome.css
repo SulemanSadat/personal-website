@@ -89,7 +89,7 @@
 .site-shell .cinema-content .skill-chip--1 { transform: perspective(700px) rotateY(-8deg) translateY(-4px); }
 .site-shell .cinema-content .skill-chip--2 { transform: perspective(700px) rotateY(8deg) translateY(4px); }
 .site-shell .cinema-content .contact-container { background: radial-gradient(ellipse at 70% 55%, #1e385a30, transparent 55%); padding-bottom: 160px; }
-.site-shell .cinema-content .contact-info-card, .site-shell .cinema-content .contact-form-card, .site-shell .cinema-content .form-input, .site-shell .cinema-content .form-textarea { background: transparent; }
+.site-shell .cinema-content .contact-form-card, .site-shell .cinema-content .form-input, .site-shell .cinema-content .form-textarea { background: transparent; }
 .is-homepage .footer-container { background: #030507; }
 .is-homepage .mega-footer { background: #000; border-top: 1px solid #92b9ed18; overflow: hidden; }
 .is-homepage .mega-footer-glow { background: radial-gradient(ellipse, #16447844, transparent 65%); }

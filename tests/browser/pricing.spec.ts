@@ -56,6 +56,7 @@ test("first visit opening is session-scoped and favicon points at the reference 
   const context = await browser.newContext();
   const page = await context.newPage();
   await page.goto("/", { waitUntil: "commit" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeVisible({ timeout: 30000 });
   await expect(page.locator("link[rel=icon]").first()).toHaveAttribute("href", /favicon\.jpg/);
   await expect(page.getByRole("status", { name: "Loading portfolio" })).toBeHidden({ timeout: 10000 });

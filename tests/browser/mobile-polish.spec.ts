@@ -65,15 +65,16 @@ test("contact introduction is a flush single column on mobile", async ({ page })
   const heading = header.locator("#contact-title");
   const intro = header.locator(".contact-subtitle");
   await expect(intro).toBeVisible();
-  const [headerBox, headingBox, introBox, infoBox, formBox] = await Promise.all([
+  const [headerBox, headingBox, introBox, formBox] = await Promise.all([
     header.boundingBox(), heading.boundingBox(), intro.boundingBox(),
-    page.locator("#contact .contact-info-card").boundingBox(),
     page.locator("#contact .contact-form-card").boundingBox(),
   ]);
   expect(Math.abs(headingBox!.x - headerBox!.x)).toBeLessThanOrEqual(1);
   expect(Math.abs(introBox!.x - headingBox!.x)).toBeLessThanOrEqual(1);
   expect(introBox!.width).toBeGreaterThanOrEqual(headerBox!.width - 1);
-  expect(formBox!.y).toBeGreaterThan(infoBox!.y + infoBox!.height);
+  expect(formBox!.y).toBeGreaterThan(introBox!.y + introBox!.height);
+  await expect(page.getByRole("heading", { name: "Contact Information" })).toHaveCount(0);
+  await expect(page.getByText("sadat.fullstack@gmail.com")).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 for (const theme of ["dark", "light"] as const) {

@@ -63,6 +63,22 @@ test("desktop cursor, scrollbar and direction-aware header match the studio cont
   expect(errors).toEqual([]);
 });
 
+test("desktop contact content shares one centered composition", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.addInitScript(() => sessionStorage.setItem("suleman-studio-opening-v1", "seen"));
+  await page.goto("/#contact");
+  const layout = await page.locator("#contact").evaluate(section => {
+    const content = section.querySelector(".contact-content")!.getBoundingClientRect();
+    const header = section.querySelector(".contact-header")!.getBoundingClientRect();
+    const form = section.querySelector(".contact-main")!.getBoundingClientRect();
+    return { content, header, form };
+  });
+  expect(Math.abs((layout.header.x + layout.header.width / 2) - (layout.content.x + layout.content.width / 2))).toBeLessThanOrEqual(1);
+  expect(Math.abs((layout.form.x + layout.form.width / 2) - (layout.content.x + layout.content.width / 2))).toBeLessThanOrEqual(1);
+  expect(layout.form.y - (layout.header.y + layout.header.height)).toBeLessThanOrEqual(50);
+  expect(layout.form.width).toBeLessThanOrEqual(920);
+});
+
 for (const [width, height, label] of [[1440,1000,"desktop"], [768,1024,"tablet"], [390,844,"mobile"]] as const) {
   test(`themes, footer and responsive project experience at ${label} size`, async ({ browser }) => {
     for (const theme of ["dark", "light"]) {

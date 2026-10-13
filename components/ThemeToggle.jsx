@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { IconMoon as FiMoon, IconSun as FiSun } from "@tabler/icons-react";
 const storageKey="suleman-portfolio-theme";
 export default function ThemeToggle({className=""}){
- const[theme,setTheme]=useState("dark");
+ const[theme,setTheme]=useState("light");
  useEffect(()=>{
-  const sync=()=>{const next=localStorage.getItem(storageKey)==="light"?"light":"dark";setTheme(next);document.documentElement.dataset.theme=next;document.querySelector('meta[name="theme-color"]')?.setAttribute("content",next==="light"?"#FFFFFF":"#000000")};
+  const sync=()=>{const next=localStorage.getItem(storageKey)==="dark"?"dark":"light";setTheme(next);document.documentElement.dataset.theme=next;document.querySelector('meta[name="theme-color"]')?.setAttribute("content",next==="light"?"#FFFFFF":"#000000")};
   sync();window.addEventListener("storage",sync);window.addEventListener("portfolio-theme-change",sync);
   return()=>{window.removeEventListener("storage",sync);window.removeEventListener("portfolio-theme-change",sync)};
  },[]);

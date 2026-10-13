@@ -38,7 +38,7 @@ export default function CinematicHome() {
   const [mobile, setMobile] = useState(false);
   const [homeVisible, setHomeVisible] = useState(true);
   const [heroReady, setHeroReady] = useState(false);
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('light');
   const cinematic = capable && !simple;
   const markHeroReady = () => {
     setHeroReady(true);

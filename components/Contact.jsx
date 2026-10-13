@@ -1,15 +1,9 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef,useState } from "react";
-import { IconBrandGithub as FaGithub,IconBrandLinkedin as FaLinkedin,IconBrandInstagram as FaInstagram,IconBrandX as FaTwitter,IconMail as FaEnvelope,IconArrowUpRight as FiArrowUpRight } from "@tabler/icons-react";
+import { IconArrowUpRight as FiArrowUpRight } from "@tabler/icons-react";
 import emailjs from "emailjs-com";
 import toast from "react-hot-toast";
-const socials = [
-  { icon: FaGithub, href: "https://github.com/SulemanSadat", label: "GitHub" },
-  { icon: FaLinkedin, href: "https://www.linkedin.com/in/suleman-sadat/", label: "LinkedIn" },
-  { icon: FaInstagram, href: "https://www.instagram.com/suleman_sadat_", label: "Instagram" },
-  { icon: FaTwitter, href: "https://www.x.com/suleman_sadat_", label: "Twitter" },
-];
 const fields = [
   { name: "name", label: "Name", type: "text", placeholder: "Your full name", autoComplete: "name" },
   { name: "email", label: "Email", type: "email", placeholder: "your.email@example.com", autoComplete: "email" },
@@ -90,18 +84,6 @@ export default function Contact({ embedded = false }) {
           <p className="contact-subtitle">Let’s discuss your full-stack web application, AI automation workflow, chatbot, mobile product or technical consulting needs.</p>
         </div>
         <div className="contact-main">
-          <div className="contact-info-card">
-            <h2 className="contact-info-title">Contact Information</h2>
-            <p className="contact-info-description">Feel free to reach out through any of the following channels.</p>
-            <div className="contact-detail-item">
-              <span className="contact-detail-icon"><FaEnvelope aria-hidden="true" /></span>
-              <div className="contact-detail-content"><h3>Email</h3><a href="mailto:sadat.fullstack@gmail.com">sadat.fullstack@gmail.com</a></div>
-            </div>
-            <div className="social-media-section">
-              <h3 className="social-media-title">Follow Me</h3>
-              <div className="social-media-links">{socials.map(social => <a key={social.label} href={social.href} className="social-media-link" aria-label={social.label} target="_blank" rel="noopener noreferrer"><social.icon aria-hidden="true" /></a>)}</div>
-            </div>
-          </div>
           <div className="contact-form-card" id="contact-form">
             <h2 className="form-title">Send a Message</h2>
             <form ref={formRef} onSubmit={handleSubmit} className="contact-form" noValidate aria-busy={sending}>
