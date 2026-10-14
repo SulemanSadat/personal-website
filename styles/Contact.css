@@ -19,6 +19,8 @@
 .form-input-error { border-color: var(--danger); }
 .error-message { color: var(--danger); font-size: 11px; }
 .form-status { color: var(--muted); font-size: 12px; }
+.form-status--success { color: var(--success); }
+.form-status--error { color: var(--danger); }
 .form-status:empty { display: none; }
 @media (max-width: 480px) { .contact-form { grid-template-columns: 1fr; } }
 @media (max-width: 600px) {

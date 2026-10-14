@@ -25,7 +25,6 @@ export default function StudioExperience() {
       });
       if (document.querySelector(".mega-footer")) {
         gsap.from(".mega-footer-name", { yPercent: 24, opacity: 0, duration: 1.25, ease: "power3.out", scrollTrigger: { trigger: ".mega-footer", start: "top 88%", once: true }, clearProps: "transform,opacity" });
-        gsap.from(".mega-footer-meta", { y: 14, opacity: 0, duration: .8, ease: "power2.out", scrollTrigger: { trigger: ".mega-footer", start: "top 84%", once: true }, clearProps: "transform,opacity" });
         gsap.to(".mega-footer-glow", { scale: 1.12, xPercent: 7, ease: "none", scrollTrigger: { trigger: ".mega-footer", start: "top bottom", end: "bottom 82%", scrub: 1 } });
       }
       if (matchMedia("(min-width: 900px)").matches) {

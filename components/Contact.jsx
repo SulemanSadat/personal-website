@@ -2,8 +2,23 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef,useState } from "react";
 import { IconArrowUpRight as FiArrowUpRight } from "@tabler/icons-react";
-import emailjs from "emailjs-com";
+import emailjs from "@emailjs/browser";
 import toast from "react-hot-toast";
+const emailConfig = {
+  serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID?.trim(),
+  templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID?.trim(),
+  publicKey: process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY?.trim(),
+};
+const emailConfigured = Object.values(emailConfig).every(value => value && !value.startsWith("your_"));
+const deliveryErrorMessage = error => {
+  const status = Number(error?.status);
+  if (status === 400 || status === 422) return "The contact service rejected the message configuration. Please email me directly while I fix it.";
+  if (status === 401 || status === 403) return "The contact service is not authorised for this site. Please email me directly.";
+  if (status === 412) return "The connected email service needs to be reauthorised. Please email me directly while it is restored.";
+  if (status === 429) return "Too many messages were sent recently. Please wait a moment or email me directly.";
+  if (!navigator.onLine || !status) return "The message could not reach the contact service. Check your connection and try again.";
+  return "The contact service could not accept your message. Please try again or email me directly.";
+};
 const fields = [
   { name: "name", label: "Name", type: "text", placeholder: "Your full name", autoComplete: "name" },
   { name: "email", label: "Email", type: "email", placeholder: "your.email@example.com", autoComplete: "email" },
@@ -21,6 +36,7 @@ export default function Contact({ embedded = false }) {
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
   const [status, setStatus] = useState("");
+  const [statusType, setStatusType] = useState("");
   const formRef = useRef(null);
   const inFlight = useRef(false);
 
@@ -30,6 +46,7 @@ export default function Contact({ embedded = false }) {
       setFormData(previous => ({ ...previous, subject: nextParams.get("subject") || "", message: nextParams.get("message") || "" }));
       setErrors({});
       setStatus("");
+      setStatusType("");
     });
     return () => cancelAnimationFrame(frame);
   }, [inquiryKey]);
@@ -46,6 +63,7 @@ export default function Contact({ embedded = false }) {
     setFormData(previous => ({ ...previous, [name]: value }));
     setErrors(previous => ({ ...previous, [name]: "" }));
     setStatus("");
+    setStatusType("");
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -56,22 +74,38 @@ export default function Contact({ embedded = false }) {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) {
       setStatus("Please check the highlighted fields.");
+      setStatusType("error");
       formRef.current.elements.namedItem(Object.keys(nextErrors)[0])?.focus();
+      return;
+    }
+    if (!emailConfigured) {
+      setStatus("The contact form is not configured on this deployment. Please email me directly at sadat.fullstack@gmail.com.");
+      setStatusType("error");
       return;
     }
     inFlight.current = true;
     setSending(true);
     setStatus("");
     try {
-      await emailjs.send("service_7070vhc", "template_woi80rn", {
-        name: formData.name, email: formData.email, title: formData.subject, message: formData.message,
-      }, "crN-_tAtx6kqlQUWY");
-      toast.success("Message sent successfully!");
-      setStatus("Message sent successfully! Thank you for getting in touch.");
+      const name = formData.name.trim();
+      const email = formData.email.trim();
+      const subject = formData.subject.trim();
+      const message = formData.message.trim();
+      const response = await emailjs.send(emailConfig.serviceId, emailConfig.templateId, {
+        name, from_name: name, user_name: name,
+        email, reply_to: email, user_email: email,
+        subject, title: subject, message,
+      }, { publicKey: emailConfig.publicKey });
+      if (response.status !== 200) throw response;
+      toast.success("Message accepted for delivery.");
+      setStatus("Your message was accepted for delivery. Thank you — I’ll reply as soon as I can.");
+      setStatusType("success");
       setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch {
-      toast.error("Failed to send message.");
-      setStatus("Your message could not be sent. Please try again or email me directly.");
+    } catch (error) {
+      const message = deliveryErrorMessage(error);
+      toast.error(message);
+      setStatus(message);
+      setStatusType("error");
     } finally { inFlight.current = false; setSending(false); }
   };
 
@@ -98,7 +132,7 @@ export default function Contact({ embedded = false }) {
                 </div>;
               })}
               <button type="submit" className="submit-button button-primary" disabled={sending}>{sending ? "Sending…" : "Send Message"}<FiArrowUpRight aria-hidden="true" /></button>
-              <p className="form-status" role="status">{status}</p>
+              <p className={`form-status ${statusType ? `form-status--${statusType}` : ""}`} role={statusType === "error" ? "alert" : "status"}>{status}</p>
             </form>
           </div>
         </div>

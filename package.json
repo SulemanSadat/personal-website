@@ -13,13 +13,13 @@
     "test:browser": "playwright test"
   },
   "dependencies": {
+    "@emailjs/browser": "^5.0.3",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource-variable/manrope": "^5.3.0",
     "@fontsource-variable/space-grotesk": "^5.3.0",
     "@react-three/fiber": "^9.8.1",
     "@reduxjs/toolkit": "^2.13.0",
     "@tabler/icons-react": "^3.49.0",
-    "emailjs-com": "^3.2.0",
     "framer-motion": "^14.1.0",
     "goey-toast": "^0.5.0",
     "gsap": "^3.15.0",

@@ -57,7 +57,8 @@ function Footer() {
                 <Link href="/">Suleman Sadat<span className="footer-brand-dot">.</span></Link>
               </h2>
               <p className="footer-brand-tagline">
-                Software engineer with 4+ years of experience building production-ready web applications for international clients. Capable of managing full-stack systems independently and supporting teams with technical solutions.
+                <span className="footer-intro-long">Software engineer with 4+ years of experience building production-ready web applications for international clients. Capable of managing full-stack systems independently and supporting teams with technical solutions.</span>
+                <span className="footer-intro-short">Independent software engineer building thoughtful digital products for ambitious teams.</span>
               </p>
             </div>
           </div>
@@ -90,6 +91,7 @@ function Footer() {
                   rel="noopener noreferrer"
                 >
                   <social.icon />
+                  <span>{social.label}</span>
                 </a>
               ))}
             </div>
@@ -119,10 +121,6 @@ function Footer() {
       </div>
       <section className="mega-footer" aria-labelledby="mega-footer-name">
         <div className="mega-footer-glow" aria-hidden="true" />
-        <div className="mega-footer-meta" aria-hidden="true">
-          <span>INDEPENDENT DEVELOPER / PRODUCT BUILDER</span>
-          <span>© {currentYear}</span>
-        </div>
         <h2 className="mega-footer-name" id="mega-footer-name" aria-label="SULEMAN SADAT"><span>SULEMAN</span>{' '}<span>SADAT</span></h2>
       </section>
     </footer>

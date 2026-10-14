@@ -9,6 +9,7 @@ import { IconArrowDown, IconArrowUpRight, IconArrowLeft, IconArrowRight } from '
 const portrait = assetPath("/assets/hero-portrait.webp");
 import { projects } from '../data/projects';
 import Testimonials from './Testimonials';
+import MobileSimpleProject from './MobileSimpleProject';
 import Pricing from '../app/pages/Pricing';
 import About from './About';
 import Contact from './Contact';
@@ -17,6 +18,7 @@ import { hasSeenOpeningThisSession } from '../utils/firstVisitPreloader';
 
 gsap.registerPlugin(ScrollTrigger);
 const World = lazy(() => import('./CinematicWorld'));
+const viewModeKey = 'suleman-portfolio-view-mode';
 class SceneBoundary extends Component {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
@@ -39,7 +41,9 @@ export default function CinematicHome() {
   const [homeVisible, setHomeVisible] = useState(true);
   const [heroReady, setHeroReady] = useState(false);
   const [theme, setTheme] = useState('light');
+  const [expandedProject, setExpandedProject] = useState(null);
   const cinematic = capable && !simple;
+  const mobileSimple = mobile && !cinematic;
   const markHeroReady = () => {
     setHeroReady(true);
     if (document.documentElement.dataset.heroReady === 'true') return;
@@ -51,6 +55,11 @@ export default function CinematicHome() {
     catch { /* A loaded image can still be painted when decode() is unavailable. */ }
     markHeroReady();
   };
+  useEffect(() => {
+    document.documentElement.classList.toggle('mobile-simple-view', mobileSimple);
+    return () => document.documentElement.classList.remove('mobile-simple-view');
+  }, [mobileSimple]);
+
   useEffect(() => {
     const update = () => setHomeVisible(window.scrollY < window.innerHeight * .6);
     const observer = new IntersectionObserver(update);
@@ -108,7 +117,13 @@ export default function CinematicHome() {
 
   useEffect(() => {
     const media = matchMedia('(max-width: 999px)');
-    const update = () => setMobile(media.matches);
+    const update = () => {
+      setMobile(media.matches);
+      try {
+        const savedMode = localStorage.getItem(viewModeKey);
+        setSimple(savedMode ? savedMode === 'simple' : media.matches);
+      } catch { setSimple(media.matches); }
+    };
     update(); media.addEventListener('change', update);
     return () => media.removeEventListener('change', update);
   }, []);
@@ -168,6 +183,7 @@ export default function CinematicHome() {
   }, [cinematic, introDone, mobile]);
 
   useLayoutEffect(() => {
+    if (mobileSimple) return;
     const media = gsap.matchMedia();
     media.add('(prefers-reduced-motion: no-preference)', () => {
       const context = gsap.context(() => {
@@ -182,7 +198,7 @@ export default function CinematicHome() {
       return () => context.revert();
     });
     return () => media.revert();
-  }, []);
+  }, [mobileSimple]);
 
   useEffect(() => {
     let frame;
@@ -198,6 +214,40 @@ export default function CinematicHome() {
     document.fonts.ready.then(() => { if (!disposed) refresh(); });
     return () => { disposed = true; observer.disconnect(); cancelAnimationFrame(frame); };
   }, []);
+
+  // Reveal once on entry; content stays readable if observers or animations are unavailable.
+  useEffect(() => {
+    if (!mobileSimple || !('IntersectionObserver' in window)) return;
+    const media = matchMedia('(prefers-reduced-motion: no-preference)');
+    let observer;
+    const animations = new Set();
+    const stop = () => {
+      observer?.disconnect();
+      animations.forEach(animation => animation.cancel());
+      animations.clear();
+    };
+    const start = () => {
+      stop();
+      if (!media.matches) return;
+      observer = new IntersectionObserver(entries => {
+        entries.forEach(({ target, isIntersecting }) => {
+          if (!isIntersecting) return;
+          observer.unobserve(target);
+          if (!target.animate || target.contains(document.activeElement)) return;
+          const animation = target.animate([
+            { opacity: .45, transform: 'translateY(14px)' },
+            { opacity: 1, transform: 'translateY(0)' },
+          ], { duration: 520, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+          animations.add(animation);
+          animation.onfinish = () => animations.delete(animation);
+        });
+      }, { threshold: .08 });
+      root.current.querySelectorAll('.cinema-story, .cinema-static-work > h2, .simple-project, .carousel-heading, .carousel-container, .p2__hero, .p2__card, .about-heading-row, .about-photo, .about-story > p, .skills-heading, .skills-row, .contact-header, .contact-form').forEach(element => observer.observe(element));
+    };
+    start();
+    media.addEventListener('change', start);
+    return () => { stop(); media.removeEventListener('change', start); };
+  }, [mobileSimple]);
 
   const seekProject = index => {
     const trigger = sceneTrigger.current;
@@ -233,10 +283,10 @@ export default function CinematicHome() {
           <div className="tunnel-exit" aria-hidden="true"><span className="cinema-kicker">BEYOND THE BUILD</span><p>Good work.<br /><em>Lasting relationships.</em></p></div>
           {!mobile && !introDone && <><div className="cinema-intro-veil" aria-hidden="true" /><button className="cinema-skip" onClick={skipIntro}>Skip intro ↗</button></>}
         </>}
-        {capable && (!mobile || homeVisible) && <button className="cinema-mode" onClick={() => { skipIntro(); setSimple(!simple); }}>{simple ? 'Enable 3D journey' : 'Use simple view'}</button>}
+        {capable && (!mobile || homeVisible) && <button className="cinema-mode" onClick={() => { const nextSimple = !simple; skipIntro(); setExpandedProject(null); setSimple(nextSimple); try { localStorage.setItem(viewModeKey, nextSimple ? 'simple' : '3d'); } catch {} }}>{simple ? 'Enable 3D journey' : 'Use simple view'}</button>}
       </section>
     </div>
-    {!cinematic && <section className="cinema-static-work" aria-labelledby="static-work-title"><span className="cinema-kicker">02 / SELECTED WORK</span><h2 id="static-work-title">Ideas become<br /><em>real things.</em></h2><div className="cinema-static-grid">{projects.map((project, i) => <article key={project.id}><a href={project.live || project.github} target="_blank" rel="noopener noreferrer"><Image src={project.image} alt={project.title} loading="lazy" width={800} height={500} /></a><span className="cinema-kicker">{String(i + 1).padStart(2, '0')} / {project.category}</span><h3>{project.title}</h3><p>{project.description}</p><div className="tunnel-tech">{project.technologies.map((tech, n) => <span key={n}>{tech}</span>)}</div><div className="tunnel-links"><a href={project.live} target="_blank" rel="noopener noreferrer">View project ↗</a>{project.github && <a href={project.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>}</div></article>)}</div></section>}
+    {!cinematic && <section className="cinema-static-work" aria-labelledby="static-work-title"><span className="cinema-kicker">02 / SELECTED WORK</span><h2 id="static-work-title">Ideas become<br /><em>real things.</em></h2><div className="cinema-static-grid">{projects.map(project => <MobileSimpleProject key={project.id} project={project} expanded={expandedProject === project.id} onToggle={() => setExpandedProject(current => current === project.id ? null : project.id)} />)}</div></section>}
     <div className="cinema-content">
       <Testimonials autoPlay={false} />
       <Pricing embedded />

@@ -122,6 +122,32 @@
   .cinema-foot > span:nth-child(2) { display: none; }
   .cinema-content .dark-carousel-wrapper { padding-block: 90px; }
 }
+
+/* Desktop Simple View uses the same card tree so layout animation stays continuous. */
+@media (min-width: 1000px) {
+  .cinematic-home.is-simple .cinema-static-work { width: min(1080px, 86%); }
+  .cinematic-home.is-simple .cinema-static-grid { display: grid; grid-template-columns: 1fr; gap: 14px; max-width: 980px; margin-top: 48px; overflow-anchor: none; }
+  .cinematic-home.is-simple .simple-project { overflow: hidden; border: 1px solid var(--line); background: var(--surface); }
+  .cinematic-home.is-simple .simple-project-toggle { display: grid; grid-template-columns: 156px minmax(0, 1fr); width: 100%; min-height: 96px; margin: 0; padding: 0; border: 0; background: transparent; color: var(--ink); text-align: left; }
+  .cinematic-home.is-simple .simple-project-image { display: block; height: 96px; overflow: hidden; background: var(--surface-soft); }
+  .cinematic-home.is-simple .simple-project-image img { width: 100%; height: 100%; margin: 0; border: 0; object-fit: cover; filter: none; }
+  .cinematic-home.is-simple .simple-project-summary { position: relative; display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: 18px 70px 18px 24px; }
+  .cinematic-home.is-simple .simple-project-summary .cinema-kicker { margin: 0 0 8px; font-size: 8px; text-transform: uppercase; }
+  .cinematic-home.is-simple .simple-project-summary strong { font: 600 clamp(20px, 2vw, 28px)/1.08 var(--font-display); letter-spacing: -.04em; }
+  .cinematic-home.is-simple .simple-project-chevron { position: absolute; top: 50%; right: 26px; display: grid; place-items: center; color: var(--accent); transform-origin: center; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-toggle { grid-template-columns: minmax(360px, .9fr) minmax(300px, 1.1fr); min-height: 250px; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-image { height: 250px; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary { padding: 32px 82px 32px 38px; border-left: 1px solid var(--line); }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary strong { font-size: clamp(30px, 3.4vw, 48px); }
+  .cinematic-home.is-simple .simple-project-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+  .cinematic-home.is-simple .simple-project-details { overflow: hidden; }
+  .cinematic-home.is-simple .simple-project-details-inner { padding: 0 38px; }
+  .cinematic-home.is-simple .simple-project-details-inner > p { max-width: 68ch; margin: 26px 0 20px; color: var(--muted); font-size: 14px; line-height: 1.8; }
+  .cinematic-home.is-simple .simple-project .tunnel-tech { gap: 8px; margin-top: 0; }
+  .cinematic-home.is-simple .simple-project .tunnel-tech span { padding: 6px 9px; border: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+  .cinematic-home.is-simple .simple-project .tunnel-links { display: flex; gap: 24px; margin: 20px 0 28px; padding-top: 18px; }
+  .cinematic-home.is-simple .simple-project .tunnel-links a { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; }
+}
 @media (max-width: 600px) {
   .cinema-stage {
     display: grid; grid-template-columns: minmax(0, 1fr);
@@ -426,4 +452,30 @@
   .cinematic-home.is-simple .cinema-static-grid article:nth-child(4) img { object-position: center 35%; }
   .cinematic-home.is-simple .cinema-static-grid article:nth-child(6) img { object-position: center 40%; }
   .cinematic-home.is-simple .cinema-static-grid article:nth-child(7) img { object-position: center 30%; }
+}
+
+/* Only the mobile Simple View mounts these disclosure cards. */
+@media (max-width: 999px) {
+  .cinematic-home.is-simple .cinema-static-grid { gap: 12px; overflow-anchor: none; }
+  .cinematic-home.is-simple .cinema-static-grid .simple-project { border-radius: 12px; }
+  .cinematic-home.is-simple .cinema-static-grid .simple-project > .simple-project-toggle { display: grid; grid-template-columns: 82px minmax(0, 1fr); align-items: stretch; width: 100%; min-height: 82px; margin: 0; padding: 0; border: 0; background: transparent; color: var(--ink); text-align: left; cursor: pointer; }
+  .cinematic-home.is-simple .simple-project-image { display: block; min-height: 82px; margin: 0; overflow: hidden; background: var(--surface-soft); }
+  .cinematic-home.is-simple .simple-project-image img { display: block; width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; box-shadow: none; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-toggle { display: block; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-image { height: auto; aspect-ratio: 16 / 10; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-image img { aspect-ratio: 16 / 10; }
+  .cinematic-home.is-simple .simple-project-summary { position: relative; display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: 12px 44px 12px 14px; }
+  .cinematic-home.is-simple .simple-project-summary .cinema-kicker { margin: 0 0 5px; color: var(--accent); font-size: 7px; letter-spacing: .12em; text-transform: uppercase; }
+  .cinematic-home.is-simple .simple-project-summary strong { display: block; font: 600 clamp(15px, 4.25vw, 20px)/1.1 var(--font-display); letter-spacing: -.035em; overflow-wrap: anywhere; }
+  .cinematic-home.is-simple .simple-project-chevron { position: absolute; top: 50%; right: 14px; display: grid; place-items: center; color: var(--accent); transform-origin: center; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary { min-height: 78px; padding: 14px 48px 14px 16px; border-bottom: 1px solid var(--line); }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary strong { font-size: clamp(20px, 5.8vw, 27px); }
+  .cinematic-home.is-simple .simple-project-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; border-radius: 12px; }
+  .cinematic-home.is-simple .cinema-static-grid .simple-project > .simple-project-details { margin-inline: 16px; overflow: hidden; }
+  .cinematic-home.is-simple .simple-project-details-inner { min-height: 0; }
+  .cinematic-home.is-simple .simple-project-details-inner > p { margin: 18px 0 16px; color: var(--muted); font-size: 12px; line-height: 1.72; }
+  .cinematic-home.is-simple .simple-project .tunnel-tech { gap: 6px; }
+  .cinematic-home.is-simple .simple-project .tunnel-tech span { display: inline-flex; padding: 5px 8px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); font-size: 10px; }
+  .cinematic-home.is-simple .simple-project .tunnel-links { display: flex; flex-wrap: wrap; gap: 12px 20px; margin: 16px 0 18px; padding-top: 0; }
+  .cinematic-home.is-simple .simple-project .tunnel-links a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--ink); }
 }
