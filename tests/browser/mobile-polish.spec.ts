@@ -74,6 +74,39 @@ test("short landscape hero uses a scrollable collision-free layout above the fix
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(844);
 });
 
+test("phone profile card keeps a steady gap above the dock on short and tall screens", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(() => localStorage.setItem("suleman-portfolio-theme", "dark"));
+  await page.goto("/");
+  const hero = page.locator(".mobile-reference-hero");
+  const card = page.locator(".mobile-reference-card");
+  const dock = page.getByRole("navigation", { name: "Bottom navigation" });
+  await expect(hero).toBeVisible();
+
+  for (const [width, height] of [[320, 740], [390, 844], [390, 500], [430, 932], [844, 390]]) {
+    await page.setViewportSize({ width, height });
+    await page.evaluate(() => {
+      const heroElement = document.querySelector(".mobile-reference-hero")!;
+      window.scrollTo({ top: Math.max(0, heroElement.getBoundingClientRect().height - innerHeight), behavior: "instant" });
+    });
+    const [cardBox, dockBox, glow] = await Promise.all([
+      card.boundingBox(), dock.boundingBox(),
+      page.locator(".mobile-reference-glow").evaluate(element => getComputedStyle(element).backgroundImage),
+    ]);
+    expect(cardBox).not.toBeNull();
+    expect(dockBox).not.toBeNull();
+    expect(dockBox!.y - (cardBox!.y + cardBox!.height)).toBeGreaterThanOrEqual(10);
+    expect(dockBox!.y - (cardBox!.y + cardBox!.height)).toBeLessThanOrEqual(15);
+    expect(glow).toContain("radial-gradient");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+  await expect(page.locator(".mobile-reference-process-line path")).toHaveCSS("stroke", "rgb(255, 255, 255)");
+  await expect(page.locator(".mobile-reference-icon").first()).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(page.locator(".mobile-reference-dots--top")).toHaveCSS("background-image", /rgb\(255, 255, 255\)/);
+  await page.evaluate(() => { document.documentElement.dataset.theme = "light"; });
+  await expect(page.locator(".mobile-reference-glow")).toHaveCSS("display", "none");
+});
+
 test("contact introduction is a flush single column on mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/#contact");

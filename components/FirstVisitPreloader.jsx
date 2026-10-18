@@ -33,8 +33,10 @@ export default function FirstVisitPreloader() {
       });
     };
     const revealWhenVisuallyReady = async () => {
-      try { await document.fonts?.ready; }
-      catch { /* The fallback font is ready to render. */ }
+      if (window.matchMedia("(min-width: 1100px)").matches) {
+        try { await document.fonts?.ready; }
+        catch { /* The fallback font is ready to render. */ }
+      }
       if (!cancelled) reveal();
     };
     const hero = document.querySelector("[data-hero-essential]");

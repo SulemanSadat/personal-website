@@ -56,6 +56,18 @@ export default function CinematicHome() {
     catch { /* A loaded image can still be painted when decode() is unavailable. */ }
     markHeroReady();
   };
+  const decodeMobileHero = event => {
+    if (window.matchMedia('(max-width: 1099px)').matches) decodeHero(event);
+  };
+  const markMobileHeroReady = () => {
+    if (window.matchMedia('(max-width: 1099px)').matches) markHeroReady();
+  };
+  const decodeDesktopHero = event => {
+    if (window.matchMedia('(min-width: 1100px)').matches) decodeHero(event);
+  };
+  const markDesktopHeroReady = () => {
+    if (window.matchMedia('(min-width: 1100px)').matches) markHeroReady();
+  };
   useEffect(() => {
     document.documentElement.classList.toggle('mobile-simple-view', mobileSimple);
     return () => document.documentElement.classList.remove('mobile-simple-view');
@@ -273,7 +285,7 @@ export default function CinematicHome() {
           <div className="mobile-reference-dots mobile-reference-dots--side" aria-hidden="true" />
           <div className="mobile-reference-glow" aria-hidden="true" />
           <div className="mobile-reference-portrait">
-            <Image src={mobileProfile} alt="Suleman Sadat, software engineer" width={1254} height={1254} sizes="(max-width: 600px) 94vw, (max-width: 1099px) 68vw, 1px" />
+            <Image src={mobileProfile} alt="Suleman Sadat, software engineer" width={1254} height={1254} sizes="(max-width: 600px) 94vw, (max-width: 1099px) 68vw, 1px" loading={mobile ? 'eager' : 'lazy'} fetchPriority={mobile ? 'high' : 'low'} data-hero-essential onLoad={decodeMobileHero} onError={markMobileHeroReady} />
           </div>
           <div className="mobile-reference-process" aria-label="Product process: Think, Build, Scale">
             <svg className="mobile-reference-process-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -300,7 +312,7 @@ export default function CinematicHome() {
         <div className="cinema-hero-meta"><span>INDEPENDENT SOFTWARE ENGINEER</span><span><i /> AVAILABLE FOR SELECT PROJECTS</span></div>
         <div className="cinema-halo" aria-hidden="true" />
         <h1 className="cinema-hero-name">SULEMAN<span>SADAT<span className="cinema-period">.</span></span></h1>
-        <div className="cinema-portrait"><Image src={portrait} alt="Suleman Sadat standing with crossed arms in a black suit" width={1024} height={1536} sizes="(max-width: 999px) 76vw, 50vw" preload data-hero-essential onLoad={decodeHero} onError={markHeroReady} /></div>
+        <div className="cinema-portrait"><Image src={portrait} alt="Suleman Sadat standing with crossed arms in a black suit" width={1024} height={1536} sizes="(max-width: 999px) 76vw, 50vw" onLoad={decodeDesktopHero} onError={markDesktopHeroReady} /></div>
         <div className="cinema-story">
           <div className="cinema-hero-copy cinema-copy-left"><span className="cinema-kicker">HELLO, I’M SULEMAN.</span><p>Software Engineer<br />Full-Stack Developer</p></div>
           <div className="cinema-hero-copy cinema-copy-right" inert={heroInert}><span className="cinema-cross" aria-hidden="true">+</span><p className="cinema-mobile-statement">Building digital products. Bringing startups to life.</p><div className="cinema-actions"><HireButton /><Link href="/#portfolio">Explore My Work <IconArrowUpRight size={17} /></Link></div></div>
