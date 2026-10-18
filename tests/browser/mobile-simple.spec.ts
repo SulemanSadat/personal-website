@@ -83,12 +83,13 @@ test('mobile Simple View disclosures support keyboard, themes, reduced motion an
   await expect(cards.first().locator('.simple-project-details')).toBeHidden();
 });
 
-test('motion-enabled Simple View reveals content and restores the 3D journey', async ({ page }) => {
+test('motion-enabled Simple View reveals content while preserving the lightweight portrait hero', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(page.locator('[data-home-ready=true]')).toBeAttached();
   await expect(page.locator('.cinematic-home')).toHaveClass(/is-simple/);
-  await expect(page.getByRole('button', { name: 'Enable 3D journey', exact: true })).toBeVisible();
+  await expect(page.locator('.mobile-reference-hero')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Enable 3D journey', exact: true })).toHaveCount(0);
   const card = page.locator('.simple-project').first();
   await card.scrollIntoViewIfNeeded();
   await card.getByRole('button').click();
@@ -106,13 +107,11 @@ test('motion-enabled Simple View reveals content and restores the 3D journey', a
   await page.locator('.contact-header').scrollIntoViewIfNeeded();
   await expect(page.locator('.contact-header')).toHaveCSS('opacity', '1');
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-  await page.getByRole('button', { name: 'Enable 3D journey', exact: true }).click();
-  await expect(page.locator('.cinematic-home')).toHaveClass(/is-cinematic/);
-  await expect(page.locator('html')).not.toHaveClass(/mobile-simple-view/);
-  await expect(page.locator('.simple-project')).toHaveCount(0);
-  await expect(page.locator('.cinema-world canvas')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Suleman Sadat', exact: true })).toHaveCount(1);
+  await expect(page.locator('.mobile-reference-process')).toBeVisible();
   await page.reload();
-  await expect(page.locator('.cinematic-home')).toHaveClass(/is-cinematic/);
+  await expect(page.locator('.cinematic-home')).toHaveClass(/is-simple/);
+  await expect(page.locator('.mobile-reference-hero')).toBeVisible();
 });
 
 test('desktop Simple View uses one-open compact project cards and cleans up the signature footer', async ({ page }) => {

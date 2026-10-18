@@ -6,28 +6,18 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("touch navigation", () => {
 test.use({ isMobile: true, hasTouch: true });
-test("first swipe stays native, drag-select navigation works, and long press has no custom menu", async ({ page }) => {
+test("portrait hero keeps native scrolling, drag-select navigation, and no custom context menu", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(page.locator("[data-home-ready=true]")).toBeAttached();
-  await expect(page.locator(".cinematic-home")).toHaveClass(/is-cinematic/);
-  await expect(page.locator(".cinema-world canvas")).toBeVisible();
-  await expect(page.locator(".cinema-world canvas")).toHaveAttribute("data-project-textures", "ready");
-  const mode = page.locator(".cinema-mode");
-  await expect(mode).toHaveText("Use simple view");
-  await mode.tap();
   await expect(page.locator(".cinematic-home")).toHaveClass(/is-simple/);
-  await expect(mode).toHaveText("Enable 3D journey");
-  await mode.tap();
-  await expect(page.locator(".cinematic-home")).toHaveClass(/is-cinematic/);
-  await expect(page.locator(".cinema-world canvas")).toBeVisible();
+  await expect(page.locator(".mobile-reference-hero")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Suleman Sadat", exact: true })).toHaveCount(1);
+  await expect(page.locator(".mobile-reference-portrait img")).toBeVisible();
 
   const dock = page.getByRole("navigation", { name: "Bottom navigation" });
   await dock.getByRole("link", { name: "Work", exact: true }).tap();
   await expect(page).toHaveURL(/#portfolio$/);
-  await expect(page.locator(".tunnel-project:not([hidden])")).toHaveCount(1);
-  await expect(page.locator(".tunnel-project:not([hidden]) .tunnel-project-visual img")).toBeVisible();
-  await expect(page.locator(".cinema-world canvas")).toHaveAttribute("data-project-textures", "ready");
   await dock.getByRole("link", { name: "Home", exact: true }).tap();
   await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(5);
 
@@ -36,7 +26,7 @@ test("first swipe stays native, drag-select navigation works, and long press has
   await client.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: 195, y: 180 }] });
   await client.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100);
-  await expect(page.locator(".cinematic-home")).toHaveClass(/is-cinematic/);
+  await expect(page.locator(".cinematic-home")).toHaveClass(/is-simple/);
 
   await page.evaluate(() => scrollTo({ top: 0, behavior: "instant" }));
   const home = dock.getByRole("link", { name: "Home", exact: true });
@@ -56,6 +46,32 @@ test("first swipe stays native, drag-select navigation works, and long press has
 
   await page.locator("body").dispatchEvent("contextmenu", { bubbles: true, cancelable: true });
   await expect(page.locator(".context-menu")).toHaveCount(0);
+});
+
+test("short landscape hero uses a scrollable collision-free layout above the fixed dock", async ({ page }) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto("/");
+  await expect(page.locator("[data-home-ready=true]")).toBeAttached();
+  const hero = page.locator(".mobile-reference-hero");
+  await expect(hero).toBeVisible();
+  expect((await hero.boundingBox())!.height).toBeGreaterThan(390);
+  const [intro, portrait, process, card] = await Promise.all([
+    page.locator(".mobile-reference-intro").boundingBox(),
+    page.locator(".mobile-reference-portrait").boundingBox(),
+    page.locator(".mobile-reference-process").boundingBox(),
+    page.locator(".mobile-reference-card").boundingBox(),
+  ]);
+  expect(intro!.y + intro!.height).toBeLessThan(portrait!.y);
+  expect(portrait!.x + portrait!.width).toBeLessThan(process!.x);
+  expect(process!.y + process!.height).toBeLessThan(card!.y);
+  const dock = page.getByRole("navigation", { name: "Bottom navigation" });
+  await page.locator(".mobile-reference-card").scrollIntoViewIfNeeded();
+  const [visibleCard, visibleDock] = await Promise.all([
+    page.locator(".mobile-reference-card").boundingBox(),
+    dock.boundingBox(),
+  ]);
+  expect(visibleCard!.y + visibleCard!.height).toBeLessThan(visibleDock!.y);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(844);
 });
 
 test("contact introduction is a flush single column on mobile", async ({ page }) => {
@@ -86,12 +102,15 @@ for (const theme of ["dark", "light"] as const) {
     await expect(page.locator(".studio-opening")).toHaveCount(0);
     await page.evaluate(() => document.fonts.ready);
     const dock = page.getByRole("navigation", { name: "Bottom navigation" });
-    const hire = page.getByRole("button", { name: "Hire Me", exact: true });
+    const profileCard = page.locator(".mobile-reference-card");
+    const profileLink = page.getByRole("link", { name: "Explore selected work", exact: true });
     for (const [width, height] of [[320, 740], [390, 844], [430, 932], [768, 1024], [844, 390]]) {
       await page.setViewportSize({ width, height });
       await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
       await expect(dock).toBeVisible();
-      await expect(hire).toBeVisible();
+      await profileCard.scrollIntoViewIfNeeded();
+      await expect(profileCard).toBeVisible();
+      await expect(profileLink).toBeVisible();
       await expect(dock).toHaveCSS("background-image", /linear-gradient/);
       expect(await dock.evaluate(element => {
         const reflection = getComputedStyle(element, "::after");
@@ -107,19 +126,20 @@ for (const theme of ["dark", "light"] as const) {
       }));
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
       const dockRect = await dock.boundingBox();
-      const hireRect = await hire.boundingBox();
+      const cardRect = await profileCard.boundingBox();
       expect(dockRect!.x).toBeGreaterThanOrEqual(0);
       expect(dockRect!.x + dockRect!.width).toBeLessThanOrEqual(width);
-      expect(hireRect!.y + hireRect!.height).toBeLessThan(dockRect!.y);
-      expect(hireRect!.height).toBeGreaterThanOrEqual(44);
+      expect(cardRect!.y + cardRect!.height).toBeLessThanOrEqual(dockRect!.y + 1);
+      expect((await profileLink.boundingBox())!.height).toBeGreaterThanOrEqual(44);
       await page.screenshot({ path: `artifacts/mobile-polish/${theme}-${width}.png` });
     }
     await page.setViewportSize({ width: 390, height: 844 });
-    await hire.tap();
-    await expect.poll(() => page.locator("#contact").evaluate(element => Math.abs(element.getBoundingClientRect().top))).toBeLessThan(160);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await profileLink.tap();
+    await expect(page).toHaveURL(/#portfolio$/);
     await dock.getByRole("link", { name: "Home", exact: true }).tap();
     await expect.poll(() => page.evaluate(() => scrollY)).toBeLessThan(5);
-    await expect(hire).toBeVisible();
+    await expect(profileCard).toBeVisible();
     await dock.getByRole("link", { name: "Pricing", exact: true }).tap();
     await expect.poll(() => page.locator("#pricing").evaluate(element => Math.abs(element.getBoundingClientRect().top))).toBeLessThan(160);
     await expect(dock.getByRole("link", { name: "Pricing", exact: true })).toHaveAttribute("aria-current", "location");

@@ -5,8 +5,9 @@ import Image from "next/image";
 import { assetPath } from "../lib/site-path";
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { IconArrowDown, IconArrowUpRight, IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
+import { IconArrowDown, IconArrowUpRight, IconArrowLeft, IconArrowRight, IconBulb, IconCode, IconChartBar } from '@tabler/icons-react';
 const portrait = assetPath("/assets/hero-portrait.webp");
+const mobileProfile = assetPath("/assets/profile.png");
 import { projects } from '../data/projects';
 import Testimonials from './Testimonials';
 import MobileSimpleProject from './MobileSimpleProject';
@@ -116,12 +117,12 @@ export default function CinematicHome() {
   }, []);
 
   useEffect(() => {
-    const media = matchMedia('(max-width: 999px)');
+    const media = matchMedia('(max-width: 1099px)');
     const update = () => {
       setMobile(media.matches);
       try {
         const savedMode = localStorage.getItem(viewModeKey);
-        setSimple(savedMode ? savedMode === 'simple' : media.matches);
+        setSimple(media.matches ? true : savedMode === 'simple');
       } catch { setSimple(media.matches); }
     };
     update(); media.addEventListener('change', update);
@@ -263,6 +264,39 @@ export default function CinematicHome() {
       <section ref={stage} className="cinema-stage" aria-label="Introduction and project journey">
         {cinematic && heroReady && <div className="cinema-world"><SceneBoundary onFailure={() => setSimple(true)}><Suspense fallback={null}><World progress={progress} theme={theme} mobile={mobile} /></Suspense></SceneBoundary></div>}
         <div className="cinema-vignette" aria-hidden="true" />
+        <div className="mobile-reference-hero">
+          <div className="mobile-reference-availability"><i aria-hidden="true" />Available for select projects</div>
+          <div className="mobile-reference-intro">
+            <p>I turn ideas into digital<br />products that create<br />real impact.</p>
+          </div>
+          <div className="mobile-reference-dots mobile-reference-dots--top" aria-hidden="true" />
+          <div className="mobile-reference-dots mobile-reference-dots--side" aria-hidden="true" />
+          <div className="mobile-reference-glow" aria-hidden="true" />
+          <div className="mobile-reference-portrait">
+            <Image src={mobileProfile} alt="Suleman Sadat, software engineer" width={1254} height={1254} sizes="(max-width: 600px) 94vw, (max-width: 1099px) 68vw, 1px" />
+          </div>
+          <div className="mobile-reference-process" aria-label="Product process: Think, Build, Scale">
+            <svg className="mobile-reference-process-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M50 0 C15 14, 84 34, 52 50 C19 66, 86 84, 50 100" />
+            </svg>
+            <div className="mobile-reference-step">
+              <span className="mobile-reference-icon"><IconBulb aria-hidden="true" /></span>
+              <span><strong>Think</strong><small>Understand<br />problems</small></span>
+            </div>
+            <div className="mobile-reference-step">
+              <span className="mobile-reference-icon"><IconCode aria-hidden="true" /></span>
+              <span><strong>Build</strong><small>Design &amp;<br />develop</small></span>
+            </div>
+            <div className="mobile-reference-step">
+              <span className="mobile-reference-icon"><IconChartBar aria-hidden="true" /></span>
+              <span><strong>Scale</strong><small>Create<br />impact</small></span>
+            </div>
+          </div>
+          <div className="mobile-reference-card">
+            <div><h1>Suleman Sadat</h1><p>Software Engineer <span aria-hidden="true">·</span> Full-Stack Developer</p></div>
+            <Link href="/#portfolio" className="mobile-reference-card-link" aria-label="Explore selected work"><IconArrowUpRight aria-hidden="true" /></Link>
+          </div>
+        </div>
         <div className="cinema-hero-meta"><span>INDEPENDENT SOFTWARE ENGINEER</span><span><i /> AVAILABLE FOR SELECT PROJECTS</span></div>
         <div className="cinema-halo" aria-hidden="true" />
         <h1 className="cinema-hero-name">SULEMAN<span>SADAT<span className="cinema-period">.</span></span></h1>

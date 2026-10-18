@@ -123,6 +123,266 @@
   .cinema-content .dark-carousel-wrapper { padding-block: 90px; }
 }
 
+/* Reference-led portrait hero. It is deliberately isolated below the existing
+   desktop navigation breakpoint so the desktop cinematic composition is intact. */
+.mobile-reference-hero { display: none; }
+
+@media (max-width: 1099px) {
+  .cinema-stage {
+    --mobile-hero-blue: #0868f5;
+    --mobile-hero-ink: #101722;
+    --mobile-hero-muted: #61708b;
+    height: auto;
+    min-height: max(100dvh, 720px);
+    max-height: none;
+    padding: 0;
+    overflow: hidden;
+    background-color: #f8fbff;
+    background-image:
+      linear-gradient(to right, #1764bd0b 1px, transparent 1px),
+      linear-gradient(to bottom, #1764bd0b 1px, transparent 1px);
+    background-size: clamp(54px, 15vw, 118px) clamp(54px, 15vw, 118px);
+  }
+  .cinematic-home.is-cinematic .cinema-stage { position: relative; top: auto; }
+  .cinematic-home.is-cinematic .cinema-sequence { height: auto; }
+  .cinema-stage > .cinema-world,
+  .cinema-stage > .cinema-vignette,
+  .cinema-stage > .cinema-hero-meta,
+  .cinema-stage > .cinema-hero-name,
+  .cinema-stage > .cinema-portrait,
+  .cinema-stage > .cinema-story,
+  .cinema-stage > .cinema-foot,
+  .cinema-stage > .cinema-mode,
+  .cinema-stage > .cinema-skip,
+  .cinema-stage > .tunnel-heading,
+  .cinema-stage > .tunnel-hud,
+  .cinema-stage > .tunnel-projects,
+  .cinema-stage > .tunnel-exit { display: none; }
+  .mobile-reference-hero {
+    display: block;
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    min-height: max(100dvh, 720px);
+    overflow: hidden;
+    color: var(--mobile-hero-ink);
+  }
+  .mobile-reference-availability {
+    position: absolute;
+    z-index: 7;
+    top: max(66px, calc(env(safe-area-inset-top, 0px) + 52px));
+    left: 7%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--mobile-hero-muted);
+    font: 600 clamp(9px, 2.55vw, 13px)/1.2 var(--font-body);
+    letter-spacing: .24em;
+    text-transform: uppercase;
+  }
+  .mobile-reference-availability i {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--mobile-hero-blue);
+    box-shadow: 0 0 0 5px #0868f50b;
+  }
+  .mobile-reference-intro {
+    position: absolute;
+    z-index: 6;
+    top: clamp(126px, 16.5dvh, 168px);
+    left: 7%;
+  }
+  .mobile-reference-intro p {
+    color: var(--mobile-hero-muted);
+    font: 500 clamp(22px, 6.05vw, 40px)/1.3 var(--font-body);
+    letter-spacing: -.035em;
+  }
+  .mobile-reference-dots {
+    position: absolute;
+    z-index: 1;
+    width: 74px;
+    height: 58px;
+    opacity: .48;
+    background-image: radial-gradient(circle, #75aef8 1.5px, transparent 1.8px);
+    background-size: 16px 16px;
+  }
+  .mobile-reference-dots--top { top: 14%; right: 22%; }
+  .mobile-reference-dots--side { top: 48%; left: 3%; }
+  .mobile-reference-glow {
+    position: absolute;
+    z-index: 0;
+    left: -10%;
+    bottom: 3%;
+    width: min(90vw, 760px);
+    aspect-ratio: 1;
+    border-radius: 58% 42% 51% 49% / 44% 55% 45% 56%;
+    background:
+      radial-gradient(ellipse at 68% 28%, #eef7ff 0 18%, #b9dcffb8 38%, transparent 66%),
+      linear-gradient(138deg, #0868f5e8 5%, #4b9cf2b8 47%, #a9d4ff52 72%, transparent 86%);
+    filter: blur(.35px);
+    transform: rotate(-7deg);
+    opacity: .88;
+  }
+  .mobile-reference-portrait {
+    position: absolute;
+    z-index: 2;
+    left: -13%;
+    bottom: 125px;
+    width: min(94vw, 700px);
+    aspect-ratio: 1;
+    pointer-events: none;
+  }
+  .mobile-reference-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 50%;
+    -webkit-mask-image: radial-gradient(ellipse 55% 61% at 51% 49%, #000 58%, #000e 69%, transparent 94%);
+    mask-image: radial-gradient(ellipse 55% 61% at 51% 49%, #000 58%, #000e 69%, transparent 94%);
+  }
+  .mobile-reference-process {
+    --process-icon: clamp(50px, 13.2vw, 76px);
+    position: absolute;
+    z-index: 5;
+    top: clamp(230px, 28dvh, 286px);
+    right: -5%;
+    width: min(42%, 310px);
+    height: clamp(294px, 38dvh, 372px);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .mobile-reference-process-line { position: absolute; top: calc(var(--process-icon) / 2); bottom: calc(var(--process-icon) / 2); left: 0; width: var(--process-icon); height: calc(100% - var(--process-icon)); overflow: visible; }
+  .mobile-reference-process-line path { fill: none; stroke: var(--mobile-hero-blue); stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .mobile-reference-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: clamp(9px, 2.4vw, 15px);
+    width: 100%;
+  }
+  .mobile-reference-icon {
+    display: grid;
+    place-items: center;
+    width: var(--process-icon);
+    height: var(--process-icon);
+    flex: 0 0 auto;
+    border-radius: 50%;
+    color: var(--mobile-hero-blue);
+    background: #ffffffed;
+    box-shadow: 0 14px 38px #2f5d8e18, inset 0 1px 0 #ffffff;
+  }
+  .mobile-reference-icon svg { width: 47%; height: 47%; stroke-width: 2.1; }
+  .mobile-reference-step strong,
+  .mobile-reference-step small { display: block; }
+  .mobile-reference-step strong { font: 700 clamp(14px, 3.65vw, 22px)/1.1 var(--font-body); letter-spacing: -.035em; }
+  .mobile-reference-step small { margin-top: 4px; color: var(--mobile-hero-muted); font: 500 clamp(10px, 2.55vw, 15px)/1.38 var(--font-body); }
+  .mobile-reference-card {
+    position: absolute;
+    z-index: 8;
+    left: 5%;
+    right: 5%;
+    bottom: calc(94px + env(safe-area-inset-bottom, 0px));
+    min-height: clamp(88px, 14dvh, 122px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: clamp(18px, 4.8vw, 35px);
+    border: 1px solid #ffffffb5;
+    border-radius: clamp(24px, 6vw, 38px);
+    background: #fffffff0;
+    box-shadow: 0 22px 55px #30547b1c, inset 0 1px 0 #ffffff;
+    backdrop-filter: blur(18px) saturate(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  }
+  .mobile-reference-card h1 {
+    color: #080b10;
+    font: 750 clamp(25px, 7vw, 48px)/.95 var(--font-display);
+    letter-spacing: -.065em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .mobile-reference-card p { margin-top: 10px; color: var(--mobile-hero-muted); font-size: clamp(10px, 2.8vw, 17px); line-height: 1.3; white-space: nowrap; }
+  .mobile-reference-card p span { margin-inline: .45em; color: var(--mobile-hero-blue); }
+  .mobile-reference-card-link {
+    display: grid;
+    place-items: center;
+    width: clamp(54px, 15vw, 88px);
+    height: clamp(54px, 15vw, 88px);
+    flex: 0 0 auto;
+    border-radius: 50%;
+    color: #ffffff;
+    background: var(--mobile-hero-blue);
+    box-shadow: 0 12px 30px #0868f53a;
+  }
+  .mobile-reference-card-link svg { width: 42%; height: 42%; stroke-width: 1.8; }
+  .mobile-reference-card-link:focus-visible { outline-color: var(--mobile-hero-blue); }
+}
+
+@media (min-width: 601px) and (max-width: 1099px) {
+  .cinema-stage, .mobile-reference-hero { min-height: max(100dvh, 680px); }
+  .mobile-reference-availability { left: 6%; font-size: 11px; }
+  .mobile-reference-intro { top: clamp(126px, 15.5dvh, 158px); left: 6%; }
+  .mobile-reference-intro p { font-size: clamp(29px, 4vw, 42px); }
+  .mobile-reference-glow { left: -2%; bottom: -12%; width: min(70vw, 720px); }
+  .mobile-reference-portrait { left: 0; bottom: 85px; width: min(68vw, 710px); }
+  .mobile-reference-process { --process-icon: clamp(58px, 8vw, 76px); top: 20%; right: 1%; width: min(32%, 300px); height: min(49dvh, 420px); }
+  .mobile-reference-step strong { font-size: clamp(17px, 2.25vw, 23px); }
+  .mobile-reference-step small { font-size: clamp(11px, 1.5vw, 15px); }
+  .mobile-reference-card { left: 5%; right: auto; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); width: min(72%, 720px); }
+}
+
+@media (min-width: 700px) and (max-width: 1099px) and (max-height: 850px) and (orientation: landscape) {
+  .mobile-reference-intro { top: 116px; }
+  .mobile-reference-intro p { font-size: clamp(28px, 3.45vw, 35px); line-height: 1.3; }
+  .mobile-reference-glow { left: 2%; bottom: -10%; width: min(56vw, 590px); }
+  .mobile-reference-portrait { left: 10%; bottom: 58px; width: min(50vw, 540px); }
+  .mobile-reference-process { top: 128px; right: 2%; width: min(28%, 290px); height: 300px; }
+  .mobile-reference-card { width: min(70%, 720px); }
+}
+
+@media (max-width: 420px) {
+  .mobile-reference-card { padding: 17px 18px; }
+  .mobile-reference-card h1 { font-size: clamp(23px, 7vw, 30px); }
+  .mobile-reference-card p { font-size: clamp(9px, 2.55vw, 12px); }
+}
+
+@media (max-width: 350px) {
+  .cinema-stage, .mobile-reference-hero { min-height: max(100dvh, 700px); }
+  .mobile-reference-process { top: 215px; right: -10px; width: 45%; height: 275px; }
+  .mobile-reference-card { left: 4%; right: 4%; }
+  .mobile-reference-card-link { width: 50px; height: 50px; }
+}
+
+@media (max-width: 600px) and (max-height: 650px) {
+  .mobile-reference-portrait { bottom: 75px; }
+  .mobile-reference-card { bottom: calc(18px + env(safe-area-inset-bottom, 0px)); }
+}
+
+:root[data-theme="dark"] .cinema-stage {
+  --mobile-hero-ink: #edf3fb;
+  --mobile-hero-muted: #a9b8cb;
+}
+@media (max-width: 1099px) {
+  :root[data-theme="dark"] .cinema-stage {
+    background-color: #07101d;
+    background-image: linear-gradient(to right, #95b0d20d 1px, transparent 1px), linear-gradient(to bottom, #95b0d20d 1px, transparent 1px);
+  }
+  :root[data-theme="dark"] .mobile-reference-glow {
+    background:
+      radial-gradient(ellipse at 68% 28%, #778fa580 0 16%, #3856738f 39%, transparent 67%),
+      linear-gradient(138deg, #10233ddd 4%, #203d5fcb 48%, #315a7f73 72%, transparent 87%);
+    opacity: .9;
+  }
+  :root[data-theme="dark"] .mobile-reference-dots { opacity: .28; }
+  :root[data-theme="dark"] .mobile-reference-icon { background: #101d2dee; box-shadow: 0 14px 38px #00071366, inset 0 1px 0 #d8e8ff18; }
+  :root[data-theme="dark"] .mobile-reference-card { border-color: #b8cbe01f; background: #0c1725ed; box-shadow: 0 22px 55px #00071370, inset 0 1px 0 #d9e8fa13; }
+  :root[data-theme="dark"] .mobile-reference-card h1 { color: #f1f5fa; }
+}
+
 /* Desktop Simple View uses the same card tree so layout animation stays continuous. */
 @media (min-width: 1000px) {
   .cinematic-home.is-simple .cinema-static-work { width: min(1080px, 86%); }
@@ -478,4 +738,107 @@
   .cinematic-home.is-simple .simple-project .tunnel-tech span { display: inline-flex; padding: 5px 8px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted); font-size: 10px; }
   .cinematic-home.is-simple .simple-project .tunnel-links { display: flex; flex-wrap: wrap; gap: 12px 20px; margin: 16px 0 18px; padding-top: 0; }
   .cinematic-home.is-simple .simple-project .tunnel-links a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--ink); }
+}
+
+/* Final mobile hero sizing wins over legacy cinematic mobile rules above. */
+@media (max-width: 1099px) {
+  .cinematic-home .cinema-stage,
+  .cinematic-home.is-simple .cinema-stage,
+  .cinematic-home.is-cinematic .cinema-stage {
+    position: relative;
+    top: auto;
+    height: auto;
+    min-height: max(100dvh, 720px);
+    max-height: none;
+    overflow: hidden;
+  }
+  .cinematic-home.is-cinematic .cinema-sequence { height: auto; }
+}
+@media (min-width: 601px) and (max-width: 1099px) {
+  .cinematic-home .cinema-stage,
+  .cinematic-home.is-simple .cinema-stage,
+  .cinematic-home.is-cinematic .cinema-stage { min-height: max(100dvh, 680px); }
+}
+
+/* Short mobile landscape: use document flow instead of compressing the layered
+   portrait composition into a shallow viewport. */
+@media (max-width: 999px) and (max-height: 650px) and (orientation: landscape) {
+  .cinematic-home .cinema-stage,
+  .cinematic-home.is-simple .cinema-stage,
+  .cinematic-home.is-cinematic .cinema-stage {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .mobile-reference-hero {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.22fr) minmax(220px, .78fr);
+    grid-template-areas:
+      "availability process"
+      "intro process"
+      "portrait process"
+      "card card";
+    column-gap: clamp(24px, 5vw, 58px);
+    row-gap: clamp(16px, 3.5vh, 26px);
+    align-items: start;
+    padding: max(48px, calc(env(safe-area-inset-top, 0px) + 34px)) 5% calc(108px + env(safe-area-inset-bottom, 0px));
+    overflow: hidden;
+  }
+  .mobile-reference-availability {
+    grid-area: availability;
+    position: relative;
+    inset: auto;
+    align-self: center;
+    max-width: 100%;
+    font-size: clamp(8px, 1.25vw, 11px);
+  }
+  .mobile-reference-intro {
+    grid-area: intro;
+    position: relative;
+    inset: auto;
+    align-self: start;
+  }
+  .mobile-reference-intro p { font-size: clamp(24px, 3.8vw, 34px); line-height: 1.26; }
+  .mobile-reference-portrait {
+    grid-area: portrait;
+    position: relative;
+    inset: auto;
+    width: min(46vw, 380px);
+    max-width: 100%;
+    justify-self: center;
+    align-self: start;
+    margin-top: clamp(180px, 50vh, 220px);
+    transform: none;
+  }
+  .mobile-reference-process {
+    --process-icon: clamp(54px, 7vw, 68px);
+    grid-area: process;
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: clamp(300px, 76vh, 350px);
+    align-self: start;
+    margin-top: clamp(320px, 88vh, 360px);
+  }
+  .mobile-reference-step { gap: clamp(9px, 1.6vw, 14px); }
+  .mobile-reference-step strong { font-size: clamp(16px, 2.35vw, 21px); }
+  .mobile-reference-step small { font-size: clamp(10px, 1.45vw, 13px); }
+  .mobile-reference-card {
+    grid-area: card;
+    position: relative;
+    inset: auto;
+    width: min(86%, 720px);
+    min-height: 112px;
+    margin-top: clamp(-12px, -1.5vh, 0px);
+    justify-self: center;
+    transform: none;
+  }
+  .mobile-reference-glow {
+    left: 23%;
+    bottom: 5%;
+    width: min(56vw, 520px);
+  }
+  .mobile-reference-dots--top { top: 8%; right: 18%; }
+  .mobile-reference-dots--side { top: 48%; left: 3%; }
 }
