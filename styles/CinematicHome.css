@@ -276,10 +276,8 @@
     box-shadow: 0 14px 38px #2f5d8e18, inset 0 1px 0 #ffffff;
   }
   .mobile-reference-icon svg { width: 47%; height: 47%; stroke-width: 2.1; }
-  .mobile-reference-step strong,
-  .mobile-reference-step small { display: block; }
+  .mobile-reference-step strong { display: block; }
   .mobile-reference-step strong { font: 700 clamp(14px, 3.65vw, 22px)/1.1 var(--font-body); letter-spacing: -.035em; }
-  .mobile-reference-step small { margin-top: 4px; color: var(--mobile-hero-muted); font: 500 clamp(10px, 2.55vw, 15px)/1.38 var(--font-body); }
   .mobile-reference-card {
     position: absolute;
     z-index: 8;
@@ -332,8 +330,7 @@
   .mobile-reference-portrait { left: 0; bottom: 85px; width: min(68vw, 710px); }
   .mobile-reference-process { --process-icon: clamp(58px, 8vw, 76px); top: 20%; right: 1%; width: min(32%, 300px); height: min(49dvh, 420px); }
   .mobile-reference-step strong { font-size: clamp(17px, 2.25vw, 23px); }
-  .mobile-reference-step small { font-size: clamp(11px, 1.5vw, 15px); }
-  .mobile-reference-card { left: 5%; right: auto; bottom: calc(88px + env(safe-area-inset-bottom, 0px)); width: min(72%, 720px); }
+  .mobile-reference-card { left: 5%; right: auto; bottom: calc(max(18px, env(safe-area-inset-bottom, 0px) + 12px) + 62px + 12px); width: min(72%, 720px); }
 }
 
 @media (min-width: 700px) and (max-width: 1099px) and (max-height: 850px) and (orientation: landscape) {
@@ -779,91 +776,12 @@
   .cinematic-home.is-cinematic .cinema-stage { min-height: max(100dvh, 680px); }
 }
 
-/* Short mobile landscape: use document flow instead of compressing the layered
-   portrait composition into a shallow viewport. */
-@media (max-width: 999px) and (max-height: 650px) and (orientation: landscape) {
-  .cinematic-home .cinema-stage,
-  .cinematic-home.is-simple .cinema-stage,
-  .cinematic-home.is-cinematic .cinema-stage {
-    height: auto;
-    min-height: 0;
-    overflow: visible;
-  }
-  .mobile-reference-hero {
-    min-height: 0;
-    display: grid;
-    grid-template-columns: minmax(0, 1.22fr) minmax(220px, .78fr);
-    grid-template-areas:
-      "availability process"
-      "intro process"
-      "portrait process"
-      "card card";
-    column-gap: clamp(24px, 5vw, 58px);
-    row-gap: clamp(16px, 3.5vh, 26px);
-    align-items: start;
-    padding: max(48px, calc(env(safe-area-inset-top, 0px) + 34px)) 5% calc(108px + env(safe-area-inset-bottom, 0px));
-    overflow: hidden;
-  }
-  .mobile-reference-availability {
-    grid-area: availability;
-    position: relative;
-    inset: auto;
-    align-self: center;
-    max-width: 100%;
-    font-size: clamp(8px, 1.25vw, 11px);
-  }
-  .mobile-reference-intro {
-    grid-area: intro;
-    position: relative;
-    inset: auto;
-    align-self: start;
-  }
-  .mobile-reference-intro p { font-size: clamp(24px, 3.8vw, 34px); line-height: 1.26; }
-  .mobile-reference-portrait {
-    grid-area: portrait;
-    position: relative;
-    inset: auto;
-    width: min(46vw, 380px);
-    max-width: 100%;
-    justify-self: center;
-    align-self: start;
-    margin-top: clamp(180px, 50vh, 220px);
-    transform: none;
-  }
-  .mobile-reference-process {
-    --process-icon: clamp(54px, 7vw, 68px);
-    grid-area: process;
-    position: relative;
-    inset: auto;
-    width: 100%;
-    height: clamp(300px, 76vh, 350px);
-    align-self: start;
-    margin-top: clamp(320px, 88vh, 360px);
-  }
-  .mobile-reference-step { gap: clamp(9px, 1.6vw, 14px); }
-  .mobile-reference-step strong { font-size: clamp(16px, 2.35vw, 21px); }
-  .mobile-reference-step small { font-size: clamp(10px, 1.45vw, 13px); }
-  .mobile-reference-card {
-    grid-area: card;
-    position: relative;
-    inset: auto;
-    width: min(86%, 720px);
-    min-height: 112px;
-    margin-top: clamp(-12px, -1.5vh, 0px);
-    justify-self: center;
-    transform: none;
-  }
-  .mobile-reference-glow {
-    left: 23%;
-    bottom: 5%;
-    width: min(56vw, 520px);
-  }
-  .mobile-reference-dots--top { top: 8%; right: 18%; }
-  .mobile-reference-dots--side { top: 48%; left: 3%; }
-}
-
 /* Phone hero finish: understated portrait framing and a dock-aware profile card. */
 @media (max-width: 600px) {
+  .mobile-reference-availability { top: max(56px, calc(env(safe-area-inset-top, 0px) + 44px)); }
+  .mobile-reference-intro { top: clamp(112px, 15dvh, 150px); }
+  .mobile-reference-portrait { bottom: 140px; }
+  .mobile-reference-process { top: clamp(210px, 27dvh, 270px); }
   .mobile-reference-glow {
     left: 9%; bottom: 22%; width: min(66vw, 310px); aspect-ratio: .82;
     border: 1px solid #ffffff70;
@@ -881,10 +799,110 @@
   }
 }
 
+/* Keep the docked card and the full process timeline in the initial short-phone view. */
+@media (max-width: 600px) and (max-height: 720px) and (orientation: portrait) {
+  .cinematic-home .cinema-stage,
+  .cinematic-home.is-simple .cinema-stage,
+  .cinematic-home.is-cinematic .cinema-stage,
+  .mobile-reference-hero {
+    min-height: 100dvh;
+  }
+  .mobile-reference-availability { top: max(48px, calc(env(safe-area-inset-top, 0px) + 34px)); }
+  .mobile-reference-intro { top: clamp(104px, 17dvh, 122px); }
+  .mobile-reference-portrait { bottom: clamp(0px, 1dvh, 6px); }
+  .mobile-reference-process {
+    top: clamp(142px, 25dvh, 172px);
+    height: clamp(184px, 33dvh, 220px);
+  }
+  .mobile-reference-card {
+    bottom: calc(max(18px, env(safe-area-inset-bottom, 0px) + 12px) + 62px + 12px);
+  }
+}
+
 @media (max-width: 850px) and (max-height: 500px) and (orientation: landscape) {
   .mobile-reference-hero {
     padding-bottom: calc(max(18px, env(safe-area-inset-bottom, 0px) + 12px) + 62px + 12px);
   }
+}
+
+@media (max-width: 600px) and (max-height: 650px) and (orientation: landscape) {
+  .mobile-reference-card { width: min(92%, 720px); }
+}
+
+/* Compact landscape flow; the profile card reserves the dock's full footprint. */
+@media (max-width: 1099px) and (max-height: 650px) and (orientation: landscape) {
+  .cinematic-home .cinema-stage,
+  .cinematic-home.is-simple .cinema-stage,
+  .cinematic-home.is-cinematic .cinema-stage {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .mobile-reference-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.9fr) minmax(170px, .65fr);
+    grid-template-areas: "availability process" "intro process" "card process";
+    align-items: start;
+    column-gap: clamp(16px, 4vw, 36px);
+    row-gap: clamp(4px, 1vh, 6px);
+    min-height: 100dvh;
+    padding: max(24px, calc(env(safe-area-inset-top, 0px) + 18px)) 5% calc(max(18px, env(safe-area-inset-bottom, 0px) + 12px) + 62px + 12px);
+    overflow: visible;
+  }
+  .mobile-reference-availability,
+  .mobile-reference-intro { position: relative; inset: auto; }
+  .mobile-reference-availability { grid-area: availability; align-self: center; max-width: 100%; font-size: clamp(8px, 1.25vw, 11px); }
+  .mobile-reference-intro { grid-area: intro; align-self: start; }
+  .mobile-reference-intro p { font-size: clamp(24px, 3.8vw, 34px); line-height: 1.26; }
+  .mobile-reference-portrait {
+    position: absolute;
+    inset: auto auto clamp(24px, 8vh, 40px) 0;
+    grid-area: auto;
+    width: min(46vw, 380px);
+    max-width: none;
+    margin: 0;
+    transform: none;
+  }
+  .mobile-reference-process {
+    --process-icon: clamp(54px, 7vw, 68px);
+    position: relative;
+    inset: auto;
+    grid-area: process;
+    align-self: center;
+    width: 100%;
+    height: clamp(170px, 54vh, 210px);
+    margin: 0;
+    transform: none;
+  }
+  .mobile-reference-step { gap: clamp(9px, 1.6vw, 14px); }
+  .mobile-reference-step strong { font-size: clamp(16px, 2.35vw, 21px); }
+  .mobile-reference-card {
+    position: relative;
+    inset: auto;
+    grid-area: card;
+    grid-column: 1;
+    align-self: end;
+    justify-self: stretch;
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: clamp(10px, 1.8vw, 16px);
+    transform: none;
+  }
+  .mobile-reference-card h1 { font-size: clamp(28px, 5.2vw, 42px); white-space: normal; }
+  .mobile-reference-card p { white-space: normal; }
+  .mobile-reference-card-link { width: clamp(54px, 12vw, 76px); height: clamp(54px, 12vw, 76px); }
+  .mobile-reference-glow { left: 23%; bottom: 5%; width: min(56vw, 520px); }
+  .mobile-reference-dots--top { top: 8%; right: 18%; }
+  .mobile-reference-dots--side { top: 48%; left: 3%; }
+}
+@media (max-width: 600px) and (max-height: 650px) and (orientation: landscape) {
+  .mobile-reference-card { width: 100%; }
+  .mobile-reference-card h1 { font-size: clamp(23px, 4.4vw, 26px); }
+  .mobile-reference-card p { font-size: clamp(10px, 2.1vw, 12px); }
+}
+@media (min-width: 601px) and (max-width: 1099px) and (max-height: 650px) and (orientation: landscape) {
+  .mobile-reference-portrait { width: min(50vw, 540px); }
 }
 
 /* Desktop Simple View portfolio cards; touch and narrow layouts keep their own rules above. */
@@ -1062,12 +1080,12 @@
   }
 }
 
-/* Desktop Simple View uses compact, self-contained project overlays. */
+/* Desktop Simple View uses self-contained project overlays. */
 .desktop-project-tile { display: none; }
-@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+@media (min-width: 1100px) {
   .cinematic-home.is-simple .cinema-static-work { width: min(1440px, 89%); }
   .cinematic-home.is-simple .cinema-static-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-auto-rows: auto;
     gap: 16px;
     max-width: none;
@@ -1104,24 +1122,34 @@
     justify-content: flex-end;
     padding: clamp(13px, 1.3vw, 19px);
     color: #f6f7fa;
-    background: linear-gradient(180deg, #05080c05 8%, #05080cbb 52%, #05080cf5 100%);
+    background: linear-gradient(0deg, #05080cf5 0%, #05080cdd 42%, #05080c70 76%, #05080c00 100%);
     opacity: 0;
     pointer-events: none;
     transform: translateY(100%);
     transition: transform 250ms cubic-bezier(.2, .7, .25, 1), opacity 200ms ease;
   }
-  .cinematic-home.is-simple .desktop-project-tile:hover .desktop-project-overlay,
   .cinematic-home.is-simple .desktop-project-tile:focus-within .desktop-project-overlay {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
   }
-  .cinematic-home.is-simple .desktop-project-tile:hover .desktop-project-thumbnail,
   .cinematic-home.is-simple .desktop-project-tile:focus-within .desktop-project-thumbnail {
     transform: scale(1.035);
   }
+  .cinematic-home.is-simple .desktop-project-content {
+    display: flex;
+    flex: 0 1 auto;
+    min-height: 0;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #ffffff55 transparent;
+  }
   .cinematic-home.is-simple .desktop-project-category {
-    margin-bottom: 6px;
+    flex-shrink: 0;
+    margin-top: 4px;
     color: #d3deed;
     font: 600 8px/1.4 var(--font-mono);
     letter-spacing: .13em;
@@ -1129,33 +1157,59 @@
   }
   .cinematic-home.is-simple .desktop-project-overlay h3 {
     margin: 0;
+    flex-shrink: 0;
     color: inherit;
-    font: 600 clamp(15px, 1.15vw, 19px)/1.15 var(--font-display);
+    font: 600 clamp(17px, 1.4vw, 22px)/1.12 var(--font-display);
     letter-spacing: -.03em;
+    overflow-wrap: anywhere;
+  }
+  .cinematic-home.is-simple .desktop-project-details {
+    margin-top: 8px;
+    overflow: visible;
   }
   .cinematic-home.is-simple .desktop-project-overlay p {
     display: -webkit-box;
     overflow: hidden;
-    margin: 7px 0 0;
+    margin: 0;
     color: #e2e7ef;
-    font-size: 10px;
-    line-height: 1.55;
+    font-size: clamp(11px, .9vw, 13px);
+    line-height: 1.45;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
+  }
+  .cinematic-home.is-simple .desktop-project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .cinematic-home.is-simple .desktop-project-tech li {
+    max-width: 100%;
+    padding: 4px 6px;
+    overflow-wrap: anywhere;
+    border: 1px solid #ffffff40;
+    border-radius: 3px;
+    background: #ffffff12;
+    color: #f6f7fa;
+    font: 500 9px/1.2 var(--font-mono);
   }
   .cinematic-home.is-simple .desktop-project-links {
     display: flex;
     flex-wrap: wrap;
+    flex-shrink: 0;
     gap: 6px 14px;
-    margin-top: 9px;
+    margin-top: 0;
+    padding-top: clamp(8px, 1vw, 12px);
   }
   .cinematic-home.is-simple .desktop-project-links a {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    min-height: 30px;
+    min-height: 32px;
     color: #fff;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     text-decoration: none;
   }
@@ -1166,15 +1220,22 @@
     outline-offset: 3px;
   }
 }
-@media (min-width: 1600px) and (hover: hover) and (pointer: fine) {
-  .cinematic-home.is-simple .cinema-static-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+@media (min-width: 1440px) {
+  .cinematic-home.is-simple .cinema-static-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+  .cinematic-home.is-simple .desktop-project-tile:hover .desktop-project-overlay { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .cinematic-home.is-simple .desktop-project-tile:hover .desktop-project-thumbnail { transform: scale(1.035); }
+}
+@media (min-width: 1100px) and (hover: none), (min-width: 1100px) and (pointer: coarse) {
+  .cinematic-home.is-simple .desktop-project-overlay { opacity: 1; pointer-events: auto; transform: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .cinematic-home.is-simple .desktop-project-thumbnail,
   .cinematic-home.is-simple .desktop-project-overlay { transition-duration: 0.01ms; }
 }
 
-@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+@media (min-width: 1100px) {
   .cinematic-home.is-simple .cinema-static-work {
     padding-top: clamp(112px, 13vh, 156px);
     padding-bottom: clamp(96px, 10vh, 144px);
@@ -1183,4 +1244,89 @@
   .cinematic-home.is-simple .cinema-static-grid {
     margin-top: clamp(30px, 3.8vh, 46px);
   }
+}
+
+/* Tablet Simple View: retain expandable cards in a two-column grid. */
+@media (min-width: 601px) and (max-width: 1099px) {
+  .cinematic-home.is-simple .cinema-static-work { width: min(calc(100% - 48px), 920px); }
+  .cinematic-home.is-simple .cinema-static-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    gap: clamp(12px, 2vw, 20px);
+    margin-top: clamp(24px, 4vw, 40px);
+  }
+  .cinematic-home.is-simple .simple-project { min-width: 0; height: auto; }
+  .cinematic-home.is-simple .simple-project-toggle,
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-toggle {
+    display: grid;
+    grid-template-columns: minmax(64px, 28%) minmax(0, 1fr);
+    grid-template-rows: minmax(82px, auto);
+    min-height: 82px;
+  }
+  .cinematic-home.is-simple .simple-project-image,
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-image {
+    height: 100%;
+    min-height: 82px;
+    aspect-ratio: auto;
+  }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] { grid-column: 1 / -1; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-toggle { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-image { aspect-ratio: 16 / 10; }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary { min-height: 82px; padding: 18px 54px 18px 20px; border-left: 0; border-top: 1px solid var(--line); }
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary strong { font-size: clamp(20px, 3vw, 30px); }
+  .cinematic-home.is-simple .simple-project-details-inner { padding: 0 clamp(16px, 3vw, 28px); }
+  .cinematic-home.is-simple .simple-project-details-inner > p { margin: 18px 0; font-size: 13px; }
+}
+
+@keyframes mobile-hero-rise-in {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes mobile-portrait-reveal {
+  from { opacity: 0; transform: translate3d(0, 18px, 0) scale(.985); }
+  to { opacity: 1; transform: translate3d(0, var(--portrait-parallax, 0px), 0) scale(1); }
+}
+@keyframes mobile-glow-settle {
+  from { opacity: .55; transform: translate3d(0, 8px, 0) scale(.985) rotate(-7deg); }
+  to { opacity: .88; transform: translate3d(0, 0, 0) scale(1) rotate(-7deg); }
+}
+@media (max-width: 1099px) and (prefers-reduced-motion: no-preference) {
+  .mobile-reference-hero[data-motion-enter="true"] .mobile-reference-availability {
+    animation: mobile-hero-rise-in 420ms cubic-bezier(.22, 1, .36, 1) both;
+  }
+  .mobile-reference-hero[data-motion-enter="true"] .mobile-reference-intro {
+    animation: mobile-hero-rise-in 480ms 65ms cubic-bezier(.22, 1, .36, 1) both;
+  }
+  .mobile-reference-hero[data-motion-enter="true"] .mobile-reference-glow {
+    animation: mobile-glow-settle 650ms 90ms cubic-bezier(.22, 1, .36, 1) both;
+  }
+  .mobile-reference-hero[data-motion-enter="true"] .mobile-reference-portrait {
+    animation: mobile-portrait-reveal 620ms 100ms cubic-bezier(.22, 1, .36, 1) both;
+  }
+  .mobile-reference-hero[data-motion-enter="true"] .mobile-reference-card {
+    animation: mobile-hero-rise-in 620ms 300ms cubic-bezier(.18, 1.25, .35, 1) both;
+  }
+  .mobile-reference-card-link { transition: transform 220ms cubic-bezier(.2, .8, .2, 1), box-shadow 220ms ease; }
+  .mobile-reference-card-link:active { transform: scale(.95); }
+  .cinematic-home.is-simple .cinema-content a:active,
+  .cinematic-home.is-simple .cinema-content button:active { transform: scale(.985); }
+}
+@keyframes mobile-reference-dashes-flow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -.08; }
+}
+@media (max-width: 1099px) {
+  .mobile-reference-process-line path { stroke-dasharray: .04 .04; stroke-dashoffset: 0; }
+}
+@media (max-width: 1099px) and (prefers-reduced-motion: no-preference) {
+  .mobile-reference-process-line path {
+    animation: mobile-reference-dashes-flow 1s linear infinite;
+  }
+}
+@media (max-width: 1099px) and (hover: hover) and (pointer: fine) {
+  .mobile-reference-card-link:hover { transform: translateY(-2px); box-shadow: 0 16px 34px #0868f550; }
+}
+@media (max-width: 1099px) and (prefers-reduced-motion: reduce) {
+  .mobile-reference-hero[data-motion-enter="true"] *,
+  .mobile-reference-card-link { animation: none !important; transition: none !important; }
 }

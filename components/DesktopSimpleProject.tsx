@@ -18,13 +18,22 @@ export default function DesktopSimpleProject({ project }: DesktopSimpleProjectPr
         alt=""
         width={800}
         height={500}
-        sizes="(min-width: 1600px) 18vw, (min-width: 1100px) 22vw, 1px"
+        sizes="(min-width: 1440px) 22vw, (min-width: 1200px) 30vw, (min-width: 1100px) 44vw, 1px"
         loading="lazy"
       />
       <div className="desktop-project-overlay">
-        <span className="desktop-project-category">{project.category}</span>
-        <h3 id={titleId}>{project.title}</h3>
-        <p id={descriptionId}>{project.description}</p>
+        <div className="desktop-project-content">
+          <h3 id={titleId}>{project.title}</h3>
+          <span className="desktop-project-category">{project.category}</span>
+          <div className="desktop-project-details">
+            <p id={descriptionId}>{project.description}</p>
+            <ul className="desktop-project-tech" aria-label={`${project.title} technology stack`}>
+              {project.technologies.map((technology, index) => (
+                <li key={`${technology}-${index}`}>{technology}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
         <div className="desktop-project-links">
           {project.live && (
             <a href={project.live} target="_blank" rel="noopener noreferrer">

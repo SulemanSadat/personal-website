@@ -45,6 +45,7 @@ export default function CinematicHome() {
   const [active, setActive] = useState(-1);
   const [heroInert, setHeroInert] = useState(false);
   const [mobile, setMobile] = useState(false);
+  const [mobileHeroMotion, setMobileHeroMotion] = useState(false);
   const [homeVisible, setHomeVisible] = useState(true);
   const [heroReady, setHeroReady] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -77,6 +78,37 @@ export default function CinematicHome() {
   useEffect(() => {
     document.documentElement.classList.toggle('mobile-simple-view', mobileSimple);
     return () => document.documentElement.classList.remove('mobile-simple-view');
+  }, [mobileSimple]);
+
+  useEffect(() => {
+    if (!mobileSimple || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const motionKey = 'suleman-mobile-hero-motion-seen';
+    try {
+      if (sessionStorage.getItem(motionKey)) return;
+      sessionStorage.setItem(motionKey, 'true');
+      setMobileHeroMotion(true);
+    } catch {
+      // If session storage is unavailable, the entrance can still play once per mount.
+      setMobileHeroMotion(true);
+    }
+  }, [mobileSimple]);
+
+  useEffect(() => {
+    if (!mobileSimple || !matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+    const portraitElement = root.current?.querySelector<HTMLElement>('.mobile-reference-portrait');
+    if (!portraitElement) return;
+    let frame = 0;
+    const updateParallax = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const heroBottom = portraitElement.closest('.mobile-reference-hero')?.getBoundingClientRect().bottom ?? 0;
+        const progress = Math.max(0, Math.min(1, (window.innerHeight - heroBottom) / window.innerHeight));
+        portraitElement.style.setProperty('--portrait-parallax', `${Math.round(progress * 12)}px`);
+      });
+    };
+    window.addEventListener('scroll', updateParallax, { passive: true });
+    updateParallax();
+    return () => { window.removeEventListener('scroll', updateParallax); cancelAnimationFrame(frame); };
   }, [mobileSimple]);
 
   useEffect(() => {
@@ -284,7 +316,7 @@ export default function CinematicHome() {
       <section ref={stage} className="cinema-stage" aria-label="Introduction and project journey">
         {cinematic && heroReady && <div className="cinema-world"><SceneBoundary onFailure={() => setSimple(true)}><Suspense fallback={null}><World progress={progress} theme={theme} mobile={mobile} /></Suspense></SceneBoundary></div>}
         <div className="cinema-vignette" aria-hidden="true" />
-        <div className="mobile-reference-hero">
+        <div className="mobile-reference-hero" data-motion-enter={mobileHeroMotion ? 'true' : undefined}>
           <div className="mobile-reference-availability"><i aria-hidden="true" />Available for select projects</div>
           <div className="mobile-reference-intro">
             <p>I turn ideas into digital<br />products that create<br />real impact.</p>
@@ -297,19 +329,19 @@ export default function CinematicHome() {
           </div>
           <div className="mobile-reference-process" aria-label="Product process: Think, Build, Scale">
             <svg className="mobile-reference-process-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M50 0 C15 14, 84 34, 52 50 C19 66, 86 84, 50 100" />
+              <path pathLength={1} d="M50 0 C15 14, 84 34, 52 50 C19 66, 86 84, 50 100" />
             </svg>
             <div className="mobile-reference-step">
               <span className="mobile-reference-icon"><IconBulb aria-hidden="true" /></span>
-              <span><strong>Think</strong><small>Understand<br />problems</small></span>
+              <strong>Think</strong>
             </div>
             <div className="mobile-reference-step">
               <span className="mobile-reference-icon"><IconCode aria-hidden="true" /></span>
-              <span><strong>Build</strong><small>Design &amp;<br />develop</small></span>
+              <strong>Build</strong>
             </div>
             <div className="mobile-reference-step">
               <span className="mobile-reference-icon"><IconChartBar aria-hidden="true" /></span>
-              <span><strong>Scale</strong><small>Create<br />impact</small></span>
+              <strong>Scale</strong>
             </div>
           </div>
           <div className="mobile-reference-card">
