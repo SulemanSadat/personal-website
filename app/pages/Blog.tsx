@@ -3,11 +3,16 @@ import React, { useState } from 'react';
 import Image from "next/image";
 import toast from 'react-hot-toast';
 
+interface Article {
+  id: number; title: string; description: string; date: string; readTime: string;
+  category: string; categoryColor: string; categoryBg: string; image: string; featured: boolean;
+}
+
 function Blog() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [likedArticles, setLikedArticles] = useState([]);
-  const [failedImages, setFailedImages] = useState([]);
+  const [likedArticles, setLikedArticles] = useState<number[]>([]);
+  const [failedImages, setFailedImages] = useState<number[]>([]);
 
   const categories = [
     { id: 'all', label: 'All Posts', count: 6 },
@@ -18,7 +23,7 @@ function Blog() {
     { id: 'writing', label: 'Writing', count: 1 }
   ];
 
-  const articles = [
+  const articles: Article[] = [
     {
       id: 1,
       title: 'Building Scalable Web Applications with Modern JavaScript',
@@ -65,7 +70,7 @@ function Blog() {
     return matchesCategory && matchesSearch;
   });
   const handleComingSoon = () => toast('Coming Soon!', { duration: 1800 });
-  const shareArticle = async (article) => {
+  const shareArticle = async (article: Article): Promise<void> => {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}#article-${article.id}`);
       toast.success('Article link copied.');

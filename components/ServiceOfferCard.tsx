@@ -3,13 +3,22 @@ import Link from "./SectionLink";
 import { createPricingInquiry } from "../utils/pricingInquiry";
 import { IconCheck as FiCheck, IconArrowUpRight as FiArrowUpRight, IconVideo as FiVideo, IconShoppingBag as FiShoppingBag, IconCode as FiCode, IconBriefcase as FiBriefcase } from "@tabler/icons-react";
 import PromotionCountdown from "./PromotionCountdown";
+import type { PricingPlan, PromotionConfig, ServiceId } from "../types/pricing";
 
 
-export default function ServiceOfferCard({ plan, promotion, serviceLabel = "Shopify", serviceId = "shopify" }) {
+interface ServiceOfferCardProps {
+  plan: PricingPlan;
+  promotion?: PromotionConfig;
+  serviceLabel?: string;
+  serviceId?: ServiceId;
+}
+
+export default function ServiceOfferCard({ plan, promotion, serviceLabel = "Shopify", serviceId = "web-apps" }: ServiceOfferCardProps) {
   const titleId = useId();
   const isShopify = plan.id === "shopify";
   const Icon = isShopify ? FiShoppingBag : plan.id === "business" ? FiBriefcase : FiCode;
-  const href = `/?${new URLSearchParams(createPricingInquiry({ serviceLabel, serviceId, plan })).toString()}#contact-form`;
+  const inquiry = createPricingInquiry({ serviceLabel, serviceId, plan });
+  const href = `/?${new URLSearchParams([['subject', inquiry.subject], ['message', inquiry.message]]).toString()}#contact-form`;
   return (
     <article className={`service-offer ${isShopify ? "service-offer--shopify" : ""}`} aria-labelledby={titleId}>
       <div className="service-offer-intro">

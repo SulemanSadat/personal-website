@@ -2,12 +2,15 @@ import { useId } from 'react';
 import Image from 'next/image';
 import { IconChevronDown, IconArrowUpRight } from '@tabler/icons-react';
 import { motion as Motion, useReducedMotion } from 'framer-motion';
+import type { Project } from '../types/project';
+import type { Transition } from 'framer-motion';
 
-export default function MobileSimpleProject({ project, expanded, onToggle }) {
+interface MobileSimpleProjectProps { project: Project; expanded: boolean; onToggle: () => void }
+export default function MobileSimpleProject({ project, expanded, onToggle }: MobileSimpleProjectProps) {
   const id = useId();
   const reduceMotion = useReducedMotion();
-  const layoutTransition = reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 38, mass: .8 };
-  const revealTransition = reduceMotion ? { duration: 0 } : { duration: .28, ease: [.22, 1, .36, 1] };
+  const layoutTransition: Transition = reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 38, mass: .8 };
+  const revealTransition: Transition = reduceMotion ? { duration: 0 } : { duration: .28, ease: [.22, 1, .36, 1] as const };
   return <Motion.article layout={!reduceMotion} transition={{ layout: layoutTransition }} className="simple-project" data-expanded={expanded}>
     <Motion.button layout="position" transition={{ layout: layoutTransition }} type="button" className="simple-project-toggle" aria-expanded={expanded} aria-controls={id} aria-label={`${expanded ? 'Collapse' : 'Expand'} ${project.title}`} onClick={onToggle}>
       <Motion.span layout transition={{ layout: layoutTransition }} className="simple-project-image"><Image src={project.image} alt="" loading="lazy" width={800} height={500} sizes="(max-width: 999px) 90vw, 800px" /></Motion.span>

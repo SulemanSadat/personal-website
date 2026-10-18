@@ -1,6 +1,13 @@
 export const siteUrl = "https://sulemansadat.com";
 export const socialImage = `${siteUrl}/preview.jpg`;
 
+interface SeoPageDefinition {
+  title: string;
+  description: string;
+  type: "profile" | "website";
+  noindex?: boolean;
+}
+
 export const seoPages = {
   "/": {
     title: "Suleman Sadat | Software Engineer & Tech Entrepreneur",
@@ -38,16 +45,27 @@ export const seoPages = {
     type: "website",
     noindex: true,
   },
-};
+} as const satisfies Record<string, SeoPageDefinition>;
+
+export type SeoPath = keyof typeof seoPages;
+
+interface PageMetadata extends SeoPageDefinition {
+  path: string;
+  canonical: string;
+}
 
 export const indexableRoutes = ["/", "/about", "/portfolio", "/pricing", "/blog", "/contact"];
 
-export function normalizePath(pathname = "/") {
-  const clean = pathname.replace(/\/+$/, "") || "/";
-  return seoPages[clean] ? clean : null;
+function isSeoPath(pathname: string): pathname is SeoPath {
+  return Object.hasOwn(seoPages, pathname);
 }
 
-export function getPageMetadata(pathname) {
+export function normalizePath(pathname = "/"): SeoPath | null {
+  const clean = pathname.replace(/\/+$/, "") || "/";
+  return isSeoPath(clean) ? clean : null;
+}
+
+export function getPageMetadata(pathname: string): PageMetadata {
   const path = normalizePath(pathname);
   return path ? { ...seoPages[path], path, canonical: `${siteUrl}${path === "/" ? "" : path}` } : {
     title: "Page Not Found | Suleman Sadat",
@@ -59,7 +77,7 @@ export function getPageMetadata(pathname) {
   };
 }
 
-export function getStructuredData(pathname) {
+export function getStructuredData(pathname: string): { "@context": string; "@graph": Record<string, unknown>[] } {
   const page = getPageMetadata(pathname);
   const person = {
     "@type": "Person", "@id": `${siteUrl}/#person`, name: "Suleman Sadat",
@@ -68,7 +86,7 @@ export function getStructuredData(pathname) {
     knowsAbout: ["Full-stack development", "Software engineering", "React", "Next.js", "Laravel", "Node.js", "AI automation", "n8n", "OpenAI API", "SaaS product development"],
     sameAs: ["https://www.linkedin.com/in/suleman-sadat/", "https://github.com/SulemanSadat", "https://x.com/suleman_sadat_", "https://www.instagram.com/suleman_sadat_"],
   };
-  const graph = [person, {
+  const graph: Record<string, unknown>[] = [person, {
     "@type": "WebSite", "@id": `${siteUrl}/#website`, url: siteUrl,
     name: "Suleman Sadat — Software Engineer", inLanguage: "en",
     publisher: { "@id": `${siteUrl}/#person` },

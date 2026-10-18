@@ -19,8 +19,11 @@ import { pricingServices, shopifyPlan, shopifyPromotion } from "../../data/prici
 import ServiceOfferCard from "../../components/ServiceOfferCard";
 import { pricingComparisons } from "../../data/pricingComparisons";
 import { createPricingInquiry } from "../../utils/pricingInquiry";
+import type { ComponentType, CSSProperties, SVGProps } from "react";
+import type { PackagePricingPlan, PackageServiceId, PricingComparisonRow, ServiceId } from "../../types/pricing";
 
-const serviceIcons = {
+type ServiceIcon = ComponentType<SVGProps<SVGSVGElement>>;
+const serviceIcons: Record<ServiceId, ServiceIcon> = {
   "web-apps": FiMonitor,
   automation: FiZap,
   "mobile-app": FiSmartphone,
@@ -28,11 +31,18 @@ const serviceIcons = {
   consultation: FiVideo,
 };
 
-function PricingCard({ plan, serviceLabel, serviceId, comparison }) {
+interface PricingCardProps {
+  plan: PackagePricingPlan;
+  serviceLabel: string;
+  serviceId: PackageServiceId;
+  comparison: PricingComparisonRow[];
+}
+
+function PricingCard({ plan, serviceLabel, serviceId, comparison }: PricingCardProps) {
   const headingId = useId();
   const delivery = plan.features.find((feature) => feature.startsWith("Delivery:"));
   const inquiry = createPricingInquiry({ serviceLabel, serviceId, plan });
-  const href = `/?${new URLSearchParams(inquiry).toString()}#contact-form`;
+  const href = `/?${new URLSearchParams([['subject', inquiry.subject], ['message', inquiry.message]]).toString()}#contact-form`;
 
   return (
     <article className={`p2__card ${plan.featured ? "p2__card--featured" : ""}`} aria-labelledby={headingId}>
@@ -83,13 +93,17 @@ function PricingCard({ plan, serviceLabel, serviceId, comparison }) {
   );
 }
 
-export default function Pricing({ embedded = false }) {
+interface PricingProps { embedded?: boolean }
+type CSSPropertiesWithVars = CSSProperties & Record<`--${string}`, string | number>;
+
+export default function Pricing({ embedded = false }: PricingProps) {
   const Heading = embedded ? "h2" : "h1";
   const [selectedService, setSelectedService] = useState(pricingServices[0].id);
   const service = pricingServices.find(({ id }) => id === selectedService) || pricingServices[0];
   const reduceMotion = useReducedMotion();
   const plansId = useId();
-  const comparison = pricingComparisons[service.id];
+  const comparison = service.id === "consultation" ? [] : pricingComparisons[service.id];
+  const gridStyle: CSSPropertiesWithVars = { "--p2-feature-count": comparison.length, "--p2-card-rows": comparison.length + 7 };
 
   return (
     <section className="p2" id="pricing">
@@ -126,18 +140,18 @@ export default function Pricing({ embedded = false }) {
                 transition={{ duration: reduceMotion ? 0 : 0.18, ease: "easeOut" }}
               >
                 <div className="p2__serviceIntro"><h2>{service.label}, built for you.</h2><p>{service.summary}</p></div>
-                {service.layout === "consultation" ? (
+                {service.id === "consultation" ? (
                   <div className="p2__consultationGrid">
                     {service.plans.map((plan) => <ServiceOfferCard key={plan.id} plan={plan} serviceLabel={service.label} serviceId={service.id} />)}
                   </div>
                 ) : (
-                  <div className="p2__grid" style={{ "--p2-feature-count": comparison.length, "--p2-card-rows": comparison.length + 7 }}>
+              <div className="p2__grid" style={gridStyle}>
                     {service.plans.map((plan) => <PricingCard key={plan.id} plan={plan} serviceLabel={service.label} serviceId={service.id} comparison={comparison} />)}
                   </div>
                 )}
                 {service.id === "web-apps" && <ServiceOfferCard plan={shopifyPlan} serviceLabel="Web Apps" serviceId={service.id} promotion={shopifyPromotion} />}
                 <div className="p2__terms">
-                  <p>{service.layout === "consultation" ? "USD per hour · One-to-one sessions" : "Final pricing depends on scope & business needs."}</p>
+                  <p>{service.id === "consultation" ? "USD per hour · One-to-one sessions" : "Final pricing depends on scope & business needs."}</p>
                   {service.note && <p>{service.note}</p>}
                 </div>
               </Motion.div>

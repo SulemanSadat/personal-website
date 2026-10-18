@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { IconArrowUpRight as FiArrowUpRight } from "@tabler/icons-react";
 import emailjs from "@emailjs/browser";
 import toast from "react-hot-toast";
@@ -15,9 +15,13 @@ const emailConfig = {
 const emailConfigured = Object.values(emailConfig).every(
   (value) => value && !value.startsWith("your_")
 );
+const contactFieldNames = ["name", "email", "subject", "message"] as const;
+type ContactFieldName = typeof contactFieldNames[number];
+type ContactFormData = Record<ContactFieldName, string>;
+type ContactErrors = Partial<Record<ContactFieldName, string>>;
 
-const deliveryErrorMessage = (error) => {
-  const status = Number(error?.status);
+const deliveryErrorMessage = (error: unknown): string => {
+  const status = typeof error === "object" && error !== null && "status" in error ? Number(error.status) : 0;
 
   if (status === 400 || status === 422) {
     return "The contact service rejected the message configuration. Please email me directly while I fix it.";
@@ -44,33 +48,34 @@ const deliveryErrorMessage = (error) => {
 
 const fields = [
   {
-    name: "name",
+    name: "name" as const,
     label: "Name",
     type: "text",
     placeholder: "Your full name",
     autoComplete: "name",
   },
   {
-    name: "email",
+    name: "email" as const,
     label: "Email",
     type: "email",
     placeholder: "your.email@example.com",
     autoComplete: "email",
   },
   {
-    name: "subject",
+    name: "subject" as const,
     label: "Subject",
     type: "text",
     placeholder: "What's this about?",
   },
   {
-    name: "message",
+    name: "message" as const,
     label: "Message",
     placeholder: "Tell me about your project...",
   },
 ];
 
-export default function Contact({ embedded = false }) {
+interface ContactProps { embedded?: boolean }
+export default function Contact({ embedded = false }: ContactProps) {
   const params = useSearchParams();
   const inquiryKey = params.toString();
 
@@ -81,17 +86,17 @@ export default function Contact({ embedded = false }) {
 
   const Heading = embedded ? "h2" : "h1";
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ContactFormData>({
     name: "",
     email: "",
     subject: inquiry.subject,
     message: inquiry.message,
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<ContactErrors>({});
   const [sending, setSending] = useState(false);
 
-  const formRef = useRef(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const inFlight = useRef(false);
 
   // Populate the form when navigating from a pricing plan.
@@ -111,24 +116,27 @@ export default function Contact({ embedded = false }) {
     return () => cancelAnimationFrame(frame);
   }, [inquiryKey]);
 
-  const handleInputChange = ({ target: { name, value } }) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    const fieldName = contactFieldNames.find((field) => field === name);
+    if (!fieldName) return;
     setFormData((previous) => ({
       ...previous,
-      [name]: value,
+      [fieldName]: value,
     }));
 
     setErrors((previous) => ({
       ...previous,
-      [name]: "",
+      [fieldName]: "",
     }));
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
     if (inFlight.current) return;
 
-    const nextErrors = {};
+    const nextErrors: ContactErrors = {};
 
     fields.forEach(({ name, label }) => {
       if (!formData[name].trim()) {
@@ -150,14 +158,13 @@ export default function Contact({ embedded = false }) {
     if (Object.keys(nextErrors).length > 0) {
       toast.error("Please check the highlighted fields.");
 
-      formRef.current?.elements
-        .namedItem(Object.keys(nextErrors)[0])
-        ?.focus();
+      const invalidControl = formRef.current?.elements.namedItem(Object.keys(nextErrors)[0]);
+      if (invalidControl instanceof HTMLElement) invalidControl.focus();
 
       return;
     }
 
-    if (!emailConfigured) {
+    if (!emailConfigured || !emailConfig.serviceId || !emailConfig.templateId || !emailConfig.publicKey) {
       toast.error(
         "Contact form unavailable. Please email sadat.fullstack@gmail.com."
       );

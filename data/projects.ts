@@ -1,4 +1,5 @@
 import { assetPath } from "../lib/site-path";
+import type { Project } from "../types/project";
 const cms=assetPath("/assets/cms.png");
 const bot=assetPath("/assets/bot.jpg");
 const automation=assetPath("/assets/automation.png");
@@ -8,7 +9,7 @@ const upworkAccelerator=assetPath("/assets/upworkAccelerator.png");
 const aziziProject=assetPath("/assets/aziziproject.webp");
 const Healthcare=assetPath("/assets/Healthcare.png");
 
-export const allProjects = [
+export const allProjects: Project[] = [
     {
       id: 8,
       title: 'AZIZI JEWELLERY',

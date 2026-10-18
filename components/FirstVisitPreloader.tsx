@@ -39,7 +39,7 @@ export default function FirstVisitPreloader() {
       }
       if (!cancelled) reveal();
     };
-    const hero = document.querySelector("[data-hero-essential]");
+    const hero = document.querySelector<HTMLImageElement>("[data-hero-essential]");
     if (document.documentElement.dataset.heroReady === "true" || (hero?.complete && hero.naturalWidth > 0)) revealWhenVisuallyReady();
     else window.addEventListener("hero-essential-ready", revealWhenVisuallyReady, { once: true });
     const failsafe = window.setTimeout(reveal, MAX_WAIT_MS);

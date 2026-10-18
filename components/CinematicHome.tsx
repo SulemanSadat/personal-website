@@ -1,5 +1,5 @@
 "use client";
-import { Component, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Component, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from "react";
 import Link from "./SectionLink";
 import Image from "next/image";
 import { assetPath } from "../lib/site-path";
@@ -11,29 +11,35 @@ const mobileProfile = assetPath("/assets/profile.png");
 import { projects } from '../data/projects';
 import Testimonials from './Testimonials';
 import MobileSimpleProject from './MobileSimpleProject';
+import DesktopSimpleProject from './DesktopSimpleProject';
 import Pricing from '../app/pages/Pricing';
 import About from './About';
 import Contact from './Contact';
 import HireButton from './HireButton';
 import { hasSeenOpeningThisSession } from '../utils/firstVisitPreloader';
+function isSectionNavigationEvent(event: Event): event is CustomEvent<{ id: string; behavior: ScrollBehavior }> {
+  return event instanceof CustomEvent && typeof event.detail === 'object' && event.detail !== null && 'id' in event.detail && 'behavior' in event.detail;
+}
 
 gsap.registerPlugin(ScrollTrigger);
 const World = lazy(() => import('./CinematicWorld'));
 const viewModeKey = 'suleman-portfolio-view-mode';
-class SceneBoundary extends Component {
-  state = { failed: false };
-  static getDerivedStateFromError() { return { failed: true }; }
+interface SceneBoundaryProps { onFailure: () => void; children: ReactNode }
+interface SceneBoundaryState { failed: boolean }
+class SceneBoundary extends Component<SceneBoundaryProps, SceneBoundaryState> {
+  state: SceneBoundaryState = { failed: false };
+  static getDerivedStateFromError(): SceneBoundaryState { return { failed: true }; }
   componentDidCatch() { this.props.onFailure(); }
   render() { return this.state.failed ? null : this.props.children; }
 }
 
 export default function CinematicHome() {
-  const root = useRef(null);
-  const stage = useRef(null);
-  const intro = useRef(null);
-  const sceneTrigger = useRef(null);
-  const progress = useRef({ value: 0 });
-  const [capable, setCapable] = useState(null);
+  const root = useRef<HTMLDivElement>(null);
+  const stage = useRef<HTMLElement>(null);
+  const intro = useRef<gsap.core.Tween | null>(null);
+  const sceneTrigger = useRef<ReturnType<typeof ScrollTrigger.create> | null>(null);
+  const progress = useRef<{ value: number; invalidate?: () => void; onFailure?: () => void }>({ value: 0 });
+  const [capable, setCapable] = useState<boolean | null>(null);
   const [simple, setSimple] = useState(false);
   const [introDone, setIntroDone] = useState(true);
   const [active, setActive] = useState(-1);
@@ -41,8 +47,8 @@ export default function CinematicHome() {
   const [mobile, setMobile] = useState(false);
   const [homeVisible, setHomeVisible] = useState(true);
   const [heroReady, setHeroReady] = useState(false);
-  const [theme, setTheme] = useState('light');
-  const [expandedProject, setExpandedProject] = useState(null);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [expandedProject, setExpandedProject] = useState<number | null>(null);
   const cinematic = capable && !simple;
   const mobileSimple = mobile && !cinematic;
   const markHeroReady = () => {
@@ -51,18 +57,18 @@ export default function CinematicHome() {
     document.documentElement.dataset.heroReady = 'true';
     window.dispatchEvent(new Event('hero-essential-ready'));
   };
-  const decodeHero = async event => {
+  const decodeHero = async (event: SyntheticEvent<HTMLImageElement>): Promise<void> => {
     try { await event.currentTarget.decode(); }
     catch { /* A loaded image can still be painted when decode() is unavailable. */ }
     markHeroReady();
   };
-  const decodeMobileHero = event => {
+  const decodeMobileHero = (event: SyntheticEvent<HTMLImageElement>): void => {
     if (window.matchMedia('(max-width: 1099px)').matches) decodeHero(event);
   };
   const markMobileHeroReady = () => {
     if (window.matchMedia('(max-width: 1099px)').matches) markHeroReady();
   };
-  const decodeDesktopHero = event => {
+  const decodeDesktopHero = (event: SyntheticEvent<HTMLImageElement>): void => {
     if (window.matchMedia('(min-width: 1100px)').matches) decodeHero(event);
   };
   const markDesktopHeroReady = () => {
@@ -76,6 +82,7 @@ export default function CinematicHome() {
   useEffect(() => {
     const update = () => setHomeVisible(window.scrollY < window.innerHeight * .6);
     const observer = new IntersectionObserver(update);
+    if (!stage.current) return;
     observer.observe(stage.current);
     window.addEventListener("scroll", update, { passive: true });
     return () => { observer.disconnect(); window.removeEventListener("scroll", update); };
@@ -90,7 +97,8 @@ export default function CinematicHome() {
 
   useEffect(() => {
     if (capable === null || (cinematic && !heroReady)) return;
-    const navigate = event => {
+    const navigate = (event: Event) => {
+      if (!isSectionNavigationEvent(event)) return;
       if (event.detail.id !== 'portfolio' || !sceneTrigger.current) return;
       event.preventDefault();
       intro.current?.kill(); setIntroDone(true);
@@ -101,7 +109,7 @@ export default function CinematicHome() {
     };
     window.addEventListener('section-navigation', navigate);
     const homeRoot = root.current;
-    let frame = requestAnimationFrame(() => {
+    const frame = requestAnimationFrame(() => {
       ScrollTrigger.refresh();
       homeRoot?.setAttribute('data-home-ready', 'true');
       window.dispatchEvent(new Event('homepage-ready'));
@@ -150,7 +158,7 @@ export default function CinematicHome() {
       const timeline = gsap.timeline({ scrollTrigger: {
         // Mobile uses a CSS-sticky stage inside a naturally tall section. It
         // retains the journey without ScrollTrigger pinning or touch capture.
-        trigger: mobile ? stage.current.parentElement : stage.current,
+        trigger: mobile ? stage.current?.parentElement ?? undefined : stage.current ?? undefined,
         start: 'top top', end: mobile ? 'bottom bottom' : () => '+=' + innerHeight * 10,
         pin: !mobile, scrub: mobile ? .28 : .65, invalidateOnRefresh: true,
         onUpdate: self => {
@@ -161,10 +169,10 @@ export default function CinematicHome() {
           const rangeSize = mobile ? .56 : .745;
           const next = p < rangeStart || p > .97 ? -1 : Math.min(projects.length - 1, Math.floor((p - rangeStart) / rangeSize * projects.length));
           if (last !== next) { last = next; setActive(next); }
-          root.current?.style.setProperty('--journey-progress', p);
+          root.current?.style.setProperty('--journey-progress', String(p));
         },
       }});
-      sceneTrigger.current = timeline.scrollTrigger;
+      sceneTrigger.current = timeline.scrollTrigger ?? null;
       if (mobile) {
         timeline.to('.cinema-hero-name', { scale: .82, yPercent: -24, opacity: 0, duration: .28, ease: 'none' }, .04)
           .to('.cinema-portrait', { scale: .78, yPercent: -10, opacity: 0, duration: .3, ease: 'none' }, .06)
@@ -192,7 +200,7 @@ export default function CinematicHome() {
     if (!cinematic || introDone) return;
     if (mobile) return;
     intro.current = gsap.fromTo('.cinema-intro-veil', { opacity: 1 }, { opacity: 0, duration: 2.5, ease: 'power2.inOut', onComplete: () => setIntroDone(true) });
-    return () => intro.current?.kill();
+    return () => { intro.current?.kill(); };
   }, [cinematic, introDone, mobile]);
 
   useLayoutEffect(() => {
@@ -200,24 +208,24 @@ export default function CinematicHome() {
     const media = gsap.matchMedia();
     media.add('(prefers-reduced-motion: no-preference)', () => {
       const context = gsap.context(() => {
-        gsap.utils.toArray('.cinema-content .testimonial-card, .cinema-content .p2__grid, .cinema-content .about-photo, .cinema-content .skills-row').forEach((element, index) => {
+        gsap.utils.toArray<HTMLElement>('.cinema-content .testimonial-card, .cinema-content .p2__grid, .cinema-content .about-photo, .cinema-content .skills-row').forEach((element, index) => {
           gsap.fromTo(element, { y: 65, rotateX: 5, rotateY: index % 2 ? -3 : 3, z: -70 }, { y: 0, rotateX: 0, rotateY: 0, z: 0, ease: 'none', scrollTrigger: { trigger: element, start: 'top 95%', end: 'top 42%', scrub: true } });
         });
-        gsap.utils.toArray('.cinema-content .about-story > p').forEach(element => {
+        gsap.utils.toArray<HTMLElement>('.cinema-content .about-story > p').forEach(element => {
           gsap.fromTo(element, { x: 25, opacity: .4 }, { x: 0, opacity: 1, ease: 'none', scrollTrigger: { trigger: element, start: 'top 95%', end: 'top 65%', scrub: true } });
         });
         gsap.fromTo('.mega-footer-name', { yPercent: 25, scale: .9 }, { yPercent: 0, scale: 1, ease: 'none', scrollTrigger: { trigger: '.mega-footer', start: 'top bottom', end: 'bottom bottom', scrub: true } });
-      }, document.querySelector('.site-shell'));
+      }, document.querySelector('.site-shell') ?? undefined);
       return () => context.revert();
     });
     return () => media.revert();
   }, [mobileSimple]);
 
   useEffect(() => {
-    let frame;
+  let frame: number | undefined;
     let disposed = false;
     const refresh = () => {
-      cancelAnimationFrame(frame);
+      if (frame !== undefined) cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => { if (!disposed) ScrollTrigger.refresh(); });
     };
     const content = root.current?.querySelector('.cinema-content');
@@ -225,15 +233,15 @@ export default function CinematicHome() {
     const observer = new ResizeObserver(refresh);
     observer.observe(content);
     document.fonts.ready.then(() => { if (!disposed) refresh(); });
-    return () => { disposed = true; observer.disconnect(); cancelAnimationFrame(frame); };
+    return () => { disposed = true; observer.disconnect(); if (frame !== undefined) cancelAnimationFrame(frame); };
   }, []);
 
   // Reveal once on entry; content stays readable if observers or animations are unavailable.
   useEffect(() => {
     if (!mobileSimple || !('IntersectionObserver' in window)) return;
     const media = matchMedia('(prefers-reduced-motion: no-preference)');
-    let observer;
-    const animations = new Set();
+    let observer: IntersectionObserver | undefined;
+    const animations = new Set<Animation>();
     const stop = () => {
       observer?.disconnect();
       animations.forEach(animation => animation.cancel());
@@ -245,7 +253,7 @@ export default function CinematicHome() {
       observer = new IntersectionObserver(entries => {
         entries.forEach(({ target, isIntersecting }) => {
           if (!isIntersecting) return;
-          observer.unobserve(target);
+          observer?.unobserve(target);
           if (!target.animate || target.contains(document.activeElement)) return;
           const animation = target.animate([
             { opacity: .45, transform: 'translateY(14px)' },
@@ -255,14 +263,14 @@ export default function CinematicHome() {
           animation.onfinish = () => animations.delete(animation);
         });
       }, { threshold: .08 });
-      root.current.querySelectorAll('.cinema-story, .cinema-static-work > h2, .simple-project, .carousel-heading, .carousel-container, .p2__hero, .p2__card, .about-heading-row, .about-photo, .about-story > p, .skills-heading, .skills-row, .contact-header, .contact-form').forEach(element => observer.observe(element));
+      root.current?.querySelectorAll('.cinema-story, .cinema-static-work > h2, .simple-project, .carousel-heading, .carousel-container, .p2__hero, .p2__card, .about-heading-row, .about-photo, .about-story > p, .skills-heading, .skills-row, .contact-header, .contact-form').forEach(element => observer?.observe(element));
     };
     start();
     media.addEventListener('change', start);
     return () => { stop(); media.removeEventListener('change', start); };
   }, [mobileSimple]);
 
-  const seekProject = index => {
+  const seekProject = (index: number): void => {
     const trigger = sceneTrigger.current;
     const rangeStart = mobile ? .4 : .225;
     const rangeSize = mobile ? .56 : .745;
@@ -332,7 +340,7 @@ export default function CinematicHome() {
         {capable && (!mobile || homeVisible) && <button className="cinema-mode" onClick={() => { const nextSimple = !simple; skipIntro(); setExpandedProject(null); setSimple(nextSimple); try { localStorage.setItem(viewModeKey, nextSimple ? 'simple' : '3d'); } catch {} }}>{simple ? 'Enable 3D journey' : 'Use simple view'}</button>}
       </section>
     </div>
-    {!cinematic && <section className="cinema-static-work" aria-labelledby="static-work-title"><span className="cinema-kicker">02 / SELECTED WORK</span><h2 id="static-work-title">Ideas become<br /><em>real things.</em></h2><div className="cinema-static-grid">{projects.map(project => <MobileSimpleProject key={project.id} project={project} expanded={expandedProject === project.id} onToggle={() => setExpandedProject(current => current === project.id ? null : project.id)} />)}</div></section>}
+    {!cinematic && <section className="cinema-static-work" aria-labelledby="static-work-title"><span className="cinema-kicker">02 / SELECTED WORK</span><h2 id="static-work-title">Ideas become<br /><em>real things.</em></h2><div className="cinema-static-grid">{projects.map(project => mobile ? <MobileSimpleProject key={project.id} project={project} expanded={expandedProject === project.id} onToggle={() => setExpandedProject(current => current === project.id ? null : project.id)} /> : <DesktopSimpleProject key={project.id} project={project} />)}</div></section>}
     <div className="cinema-content">
       <Testimonials autoPlay={false} />
       <Pricing embedded />

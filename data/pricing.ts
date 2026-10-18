@@ -1,5 +1,7 @@
 // All service content lives here; plan IDs stay stable when display names change.
-export const pricingServices = [
+import type { PricingPlan, PricingService, PromotionConfig } from "../types/pricing";
+
+export const pricingServices: PricingService[] = [
   {
     "id": "web-apps",
     "label": "Web Apps",
@@ -305,7 +307,7 @@ export const pricingServices = [
   }
 ];
 
-export const shopifyPlan = {
+export const shopifyPlan: PricingPlan = {
   id: "shopify",
   name: "Shopify Store",
   desc: "A considered storefront, ready for your first customers.",
@@ -317,4 +319,4 @@ export const shopifyPlan = {
 
 // Use a real campaign deadline in ISO 8601 with an explicit Z or UTC offset.
 // Leave null until the owner confirms one. Never derive this from visit time.
-export const shopifyPromotion = { expiresAt: null };
+export const shopifyPromotion: PromotionConfig = { expiresAt: null };

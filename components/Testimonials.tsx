@@ -72,14 +72,15 @@ const testimonials = [
 
 ];
 
-export default function Testimonials({ autoPlay = true }) {
+interface TestimonialsProps { autoPlay?: boolean }
+export default function Testimonials({ autoPlay = true }: TestimonialsProps) {
   const [index, setIndex] = useState(0);
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLElement>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const update = () => { const rect = sectionRef.current.getBoundingClientRect(); setVisible(!document.hidden && rect.bottom > 0 && rect.top < innerHeight); };
+    const update = () => { const rect = sectionRef.current?.getBoundingClientRect(); if (rect) setVisible(!document.hidden && rect.bottom > 0 && rect.top < innerHeight); };
     const observer = new IntersectionObserver(update);
-    observer.observe(sectionRef.current);
+    if (sectionRef.current) observer.observe(sectionRef.current);
     document.addEventListener("visibilitychange", update);
     return () => { observer.disconnect(); document.removeEventListener("visibilitychange", update); };
   }, []);
@@ -97,7 +98,7 @@ export default function Testimonials({ autoPlay = true }) {
   }, [visible, paused, interacting, reducedMotion]);
 
 
-  const renderStars = (count) =>
+  const renderStars = (count: number) =>
     Array.from({ length: count }).map((_, i) => (
       <span key={i} className="star">★</span>
     ));

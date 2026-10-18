@@ -1,10 +1,12 @@
+import type { ComparisonValue, PackageServiceId, PricingComparisonRow } from "../types/pricing";
+
 // Explicit comparisons avoid treating differently worded or unlisted basics as exclusions.
 // A string is an included allowance; false means this upgrade is not in the package.
-const row = (id, label, essential, recommended, bespoke, upgrade = false) => ({
+const row = (id: string, label: string, essential: ComparisonValue, recommended: ComparisonValue, bespoke: ComparisonValue, upgrade = false): PricingComparisonRow => ({
   id, label, values: { essential, recommended, bespoke }, upgrade,
 });
 
-export const pricingComparisons = {
+export const pricingComparisons: Record<PackageServiceId, PricingComparisonRow[]> = {
   "web-apps": [
     row("scope", "Website scope", "1-page responsive landing", "Up to 5 pages", "Custom website scope"),
     row("components", "Custom pages & components", true, true, true, true),

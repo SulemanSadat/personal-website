@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -8,8 +8,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function StudioExperience() {
   const pathname = usePathname();
-  const cursor = useRef();
-  const rail = useRef();
+  const cursor = useRef<HTMLDivElement>(null);
+  const rail = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
   const [progress, setProgress] = useState(0);
   useEffect(() => {
@@ -17,10 +17,10 @@ export default function StudioExperience() {
     const media = gsap.matchMedia();
     media.add("(prefers-reduced-motion: no-preference)", () => {
       if (document.querySelector(".hero-name")) gsap.from(".hero-name > span", { y: 35, opacity: 0, stagger: .1, duration: 1, ease: "power3.out", clearProps: "all" });
-      gsap.utils.toArray(".portfolio-header, .about-heading-row, .contact-header, .p2__hero, .skills-heading").forEach(element => {
+      gsap.utils.toArray<HTMLElement>(".portfolio-header, .about-heading-row, .contact-header, .p2__hero, .skills-heading").forEach(element => {
         gsap.from(element, { y: 32, opacity: .25, duration: .9, ease: "power2.out", scrollTrigger: { trigger: element, start: "top 92%", once: true }, clearProps: "all" });
       });
-      gsap.utils.toArray(".project-image").forEach(element => {
+      gsap.utils.toArray<HTMLElement>(".project-image").forEach(element => {
         gsap.from(element, { clipPath: "inset(8% 0 0 0)", y: 18, duration: 1, ease: "power3.out", scrollTrigger: { trigger: element, start: "top 94%", once: true }, clearProps: "all" });
       });
       if (document.querySelector(".mega-footer")) {
@@ -33,7 +33,8 @@ export default function StudioExperience() {
       }
     });
     const resize = new ResizeObserver(() => ScrollTrigger.refresh());
-    resize.observe(document.querySelector("main"));
+    const main = document.querySelector("main");
+    if (main) resize.observe(main);
     return () => { resize.disconnect(); media.revert(); };
   }, [pathname]);
 
@@ -41,14 +42,15 @@ export default function StudioExperience() {
     const media = gsap.matchMedia();
     media.add("(min-width: 1000px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
       const element = cursor.current;
-      let magnetic = null;
+      if (!element) return;
+      let magnetic: Element | null = null;
       const moveX = gsap.quickTo(element, "x", { duration: .18, ease: "power3" });
       const moveY = gsap.quickTo(element, "y", { duration: .18, ease: "power3" });
-      const move = event => {
+      const move = (event: PointerEvent) => {
         if (!(event.target instanceof Element)) return;
         element.style.opacity = "1";
         moveX(event.clientX); moveY(event.clientY);
-        const target = event.target.closest("[data-cursor], a, button");
+        const target = event.target.closest<HTMLElement>("[data-cursor], a, button");
         const label = target?.dataset.cursor || (target?.matches("a") ? "View" : "");
         element.textContent = label;
         element.classList.toggle("studio-cursor--label", Boolean(label));
@@ -71,30 +73,31 @@ export default function StudioExperience() {
   }, [pathname]);
 
   useEffect(() => {
-    let frame;
+    let frame: number | undefined;
     const update = () => {
-      frame = null;
+      frame = undefined;
       const max = document.documentElement.scrollHeight - innerHeight;
       setProgress(max > 0 ? Math.round(scrollY / max * 100) : 0);
     };
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    const schedule = () => { if (frame === undefined) frame = requestAnimationFrame(update); };
     update();
     const observer = new ResizeObserver(schedule);
     observer.observe(document.body);
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
     document.documentElement.classList.add("studio-scroll-ready");
-    return () => { cancelAnimationFrame(frame); observer.disconnect(); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); document.documentElement.classList.remove("studio-scroll-ready"); };
+    return () => { if (frame !== undefined) cancelAnimationFrame(frame); observer.disconnect(); window.removeEventListener("scroll", schedule); window.removeEventListener("resize", schedule); document.documentElement.classList.remove("studio-scroll-ready"); };
   }, [pathname]);
 
-  const seek = event => {
-    const rect = rail.current.getBoundingClientRect();
+  const seek = (event: ReactPointerEvent<HTMLDivElement>): void => {
+    const rect = rail.current?.getBoundingClientRect();
+    if (!rect) return;
     const ratio = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
     window.scrollTo({ top: ratio * (document.documentElement.scrollHeight - innerHeight), behavior: "instant" });
   };
-  const onKey = event => {
+  const onKey = (event: ReactKeyboardEvent<HTMLDivElement>): void => {
     const max = document.documentElement.scrollHeight - innerHeight;
-    const positions = { Home: 0, End: max, ArrowDown: scrollY + 80, ArrowUp: scrollY - 80, PageDown: scrollY + innerHeight * .8, PageUp: scrollY - innerHeight * .8 };
+    const positions: Record<string, number> = { Home: 0, End: max, ArrowDown: scrollY + 80, ArrowUp: scrollY - 80, PageDown: scrollY + innerHeight * .8, PageUp: scrollY - innerHeight * .8 };
     if (event.key in positions) { event.preventDefault(); window.scrollTo({ top: positions[event.key], behavior: "instant" }); }
   };
   return <>

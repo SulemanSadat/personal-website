@@ -1,10 +1,15 @@
 import { Suspense, useEffect, useRef } from 'react';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
-import { TextureLoader, SRGBColorSpace, MathUtils } from 'three';
+import { TextureLoader, SRGBColorSpace, MathUtils, Mesh, type Group } from 'three';
 import { projects } from '../data/projects';
 
-function Screens({ light }) {
-  const screens = useRef([]);
+interface SceneProgress { current: { value: number; invalidate?: () => void; onFailure?: () => void } }
+interface ScreensProps { light: boolean }
+interface CameraRigProps { progress: SceneProgress; mobile?: boolean }
+interface CinematicWorldProps { progress: SceneProgress; theme?: 'light' | 'dark'; mobile?: boolean }
+
+function Screens({ light }: ScreensProps) {
+  const screens = useRef<Array<Group | null>>([]);
   const textures = useLoader(TextureLoader, projects.map(project => project.image));
   const { invalidate, gl } = useThree();
   useEffect(() => {
@@ -20,7 +25,7 @@ function Screens({ light }) {
       if (!group) return;
       const distance = camera.position.z - group.position.z;
       group.visible = distance > .5;
-      group.children.forEach(mesh => { mesh.material.opacity = MathUtils.clamp((distance - .5) / 4, 0, 1) * (mesh.userData.reflection ? .05 : 1); });
+      group.children.forEach(child => { if (child instanceof Mesh && !Array.isArray(child.material) && 'opacity' in child.material) child.material.opacity = MathUtils.clamp((distance - .5) / 4, 0, 1) * (child.userData.reflection ? .05 : 1); });
     });
   });
   return projects.map((project, i) => <group ref={node => { screens.current[i] = node; }} key={project.id} position={[i % 2 ? 3.4 : -3.4, .25, -8 - i * 12]} rotation={[0, i % 2 ? -.22 : .22, 0]}>
@@ -31,12 +36,12 @@ function Screens({ light }) {
   </group>);
 }
 
-function CameraRig({ progress, mobile = false }) {
+function CameraRig({ progress, mobile = false }: CameraRigProps) {
   const { camera, invalidate, gl } = useThree();
   useEffect(() => {
     const sharedProgress = progress;
     Object.assign(sharedProgress.current, { invalidate });
-    const lost = event => { event.preventDefault(); progress.current.onFailure?.(); };
+    const lost = (event: Event) => { event.preventDefault(); progress.current.onFailure?.(); };
     gl.domElement.addEventListener('webglcontextlost', lost);
     return () => { Object.assign(sharedProgress.current, { invalidate: undefined }); gl.domElement.removeEventListener('webglcontextlost', lost); };
   }, [progress, invalidate, gl]);
@@ -59,7 +64,7 @@ function CameraRig({ progress, mobile = false }) {
   return null;
 }
 
-export default function CinematicWorld({ progress, theme = 'dark', mobile = false }) {
+export default function CinematicWorld({ progress, theme = 'dark', mobile = false }: CinematicWorldProps) {
   const light = theme === 'light';
   const palette = light ? {
     background: '#ffffff', ambient: 1.15, sky: '#ffffff', ground: '#d8d8d8',

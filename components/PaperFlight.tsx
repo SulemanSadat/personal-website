@@ -1,15 +1,17 @@
 "use client";
-import { Component, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { BufferGeometry, Float32BufferAttribute, DoubleSide, MathUtils } from "three";
+import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Canvas, useFrame, type ThreeElements } from "@react-three/fiber";
+import { BufferGeometry, Float32BufferAttribute, DoubleSide, MathUtils, Group } from "three";
 import { IconPlayerPause, IconPlayerPlay } from "@tabler/icons-react";
 
 function PaperFallback() {
   return <svg className="paper-fallback" viewBox="0 0 600 500" aria-hidden="true"><g transform="translate(290 265) rotate(-18)"><path d="M0 0L-180-145-48 25 95 4 150-40 76-22Z" fill="var(--paper-front)" /><path d="M0 0L-15-185 68-37 95 4Z" fill="var(--paper-fold)" /><path d="M-48 25L-135 100-86 22 0 0Z" fill="var(--paper-edge)" /><path d="M0 0L-180-145-48 25Z" fill="var(--paper-fold)" opacity=".45" /></g><g transform="translate(430 100) scale(.35) rotate(-8)"><path d="M0 0L-180-145-48 25 95 4 150-40 76-22 0-170Z" fill="var(--paper-fold)" /></g></svg>;
 }
-class ArtBoundary extends Component {
-  state = { failed: false };
-  static getDerivedStateFromError() { return { failed: true }; }
+interface ArtBoundaryProps { children: ReactNode }
+interface ArtBoundaryState { failed: boolean }
+class ArtBoundary extends Component<ArtBoundaryProps, ArtBoundaryState> {
+  state: ArtBoundaryState = { failed: false };
+  static getDerivedStateFromError(): ArtBoundaryState { return { failed: true }; }
   render() { return this.state.failed ? <PaperFallback /> : this.props.children; }
 }
 
@@ -26,7 +28,8 @@ const faces = [
   [[-.65, -.12, .15], [0, 0, .12], [-1.15, -.85, -.05]],
   [[-.65, -.12, .15], [0, 0, .12], [-.48, -.8, -.28]],
 ];
-function Bird({ light, ...props }) {
+type BirdProps = ThreeElements["group"] & { light: boolean };
+function Bird({ light, ...props }: BirdProps) {
   const geometries = useMemo(() => faces.map(points => {
     const geometry = new BufferGeometry();
     geometry.setAttribute("position", new Float32BufferAttribute(points.flat(), 3));
@@ -37,11 +40,13 @@ function Bird({ light, ...props }) {
   const colors = light ? ["#e5e2db", "#faf7ef", "#345eac", "#6a8ccb", "#f9f6ed", "#e0dfda", "#eeeeea", "#a0b7d5", "#567aaf"] : ["#a6bdd9", "#faf2e1", "#7299cc", "#c4d6ed", "#f8f0e0", "#c2cfde", "#f7f0e2", "#5479ab", "#b8cce0"];
   return <group {...props}>{geometries.map((geometry, i) => <mesh geometry={geometry} key={i}><meshStandardMaterial color={colors[i]} side={DoubleSide} roughness={.85} metalness={0} /></mesh>)}</group>;
 }
-function Flock({ light, still, turn, scroll }) {
-  const group = useRef();
+interface FlockProps { light: boolean; still: boolean; turn: React.MutableRefObject<number>; scroll: React.MutableRefObject<number> }
+function Flock({ light, still, turn, scroll }: FlockProps) {
+  const group = useRef<Group | null>(null);
   useFrame(({ clock, pointer }, delta) => {
     const t = clock.elapsedTime;
     const ease = still ? 1 : 1 - Math.exp(-Math.min(delta, .1) * 4);
+    if (!group.current) return;
     group.current.rotation.y = MathUtils.lerp(group.current.rotation.y, turn.current + (still ? 0 : pointer.x * .12), ease);
     group.current.rotation.x = MathUtils.lerp(group.current.rotation.x, -.12 + (still ? 0 : pointer.y * .07 + scroll.current * .16), ease);
     group.current.position.y = still ? 0 : Math.sin(t * .65) * .065 + scroll.current * .2;
@@ -54,11 +59,11 @@ function Flock({ light, still, turn, scroll }) {
   </group>;
 }
 export default function PaperFlight() {
-  const host = useRef();
+  const host = useRef<HTMLDivElement>(null);
   const invalidate = useRef(() => {});
   const turn = useRef(0);
   const scroll = useRef(0);
-  const drag = useRef(null);
+  const drag = useRef<number | null>(null);
   const [active, setActive] = useState(true);
   const [paused, setPaused] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -69,10 +74,10 @@ export default function PaperFlight() {
     const theme = new MutationObserver(() => setLight(document.documentElement.dataset.theme === "light"));
     theme.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
     const observer = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting && !document.hidden));
-    observer.observe(host.current);
+    if (host.current) observer.observe(host.current);
     const media = matchMedia("(prefers-reduced-motion: reduce)");
     const onMotion = () => setReduced(media.matches);
-    const onVisibility = () => { const rect = host.current.getBoundingClientRect(); setActive(!document.hidden && rect.bottom > 0 && rect.top < innerHeight); };
+    const onVisibility = () => { const rect = host.current?.getBoundingClientRect(); if (rect) setActive(!document.hidden && rect.bottom > 0 && rect.top < innerHeight); };
     const onScroll = () => { scroll.current = Math.min(scrollY / innerHeight, 1); };
     media.addEventListener("change", onMotion);
     document.addEventListener("visibilitychange", onVisibility);
@@ -84,7 +89,7 @@ export default function PaperFlight() {
     const timer = setInterval(() => invalidate.current(), 1000 / 30);
     return () => clearInterval(timer);
   }, [active, still, failed]);
-  const changeView = amount => { turn.current = MathUtils.clamp(turn.current + amount, -.65, .65); invalidate.current(); };
+  const changeView = (amount: number): void => { turn.current = MathUtils.clamp(turn.current + amount, -.65, .65); invalidate.current(); };
   return <div className="paper-flight" ref={host}>
     <div className="paper-stage" role="img" aria-label="Three folded-paper swallows carrying an idea into flight">
       {failed ? <PaperFallback /> : <ArtBoundary><Canvas camera={{ position: [0, 0, 7.5], fov: 44 }} dpr={[1, 1.5]} frameloop="demand" gl={{ alpha: true, antialias: true, powerPreference: "low-power" }} fallback={<PaperFallback />} onCreated={({ gl, invalidate: redraw }) => { invalidate.current = redraw; gl.domElement.addEventListener("webglcontextlost", () => setFailed(true), { once: true }); }}>

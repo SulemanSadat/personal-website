@@ -1,4 +1,17 @@
-export function createPricingInquiry({ serviceLabel, plan, serviceId }) {
+import type { PricingPlan } from "../types/pricing";
+
+interface PricingInquiryInput {
+  serviceLabel: string;
+  plan: Pick<PricingPlan, "name" | "price">;
+  serviceId: string;
+}
+
+export interface PricingInquiry {
+  subject: string;
+  message: string;
+}
+
+export function createPricingInquiry({ serviceLabel, plan, serviceId }: PricingInquiryInput): PricingInquiry {
   const isConsultation = serviceId === "consultation";
 
   if (isConsultation) {

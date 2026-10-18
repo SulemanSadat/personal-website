@@ -886,3 +886,301 @@
     padding-bottom: calc(max(18px, env(safe-area-inset-bottom, 0px) + 12px) + 62px + 12px);
   }
 }
+
+/* Desktop Simple View portfolio cards; touch and narrow layouts keep their own rules above. */
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+  .cinematic-home.is-simple .cinema-static-work {
+    width: min(1440px, 89%);
+  }
+
+  .cinematic-home.is-simple .cinema-static-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 24px;
+    max-width: none;
+    margin-top: 48px;
+  }
+
+  .cinematic-home.is-simple .simple-project {
+    min-width: 0;
+    height: 100%;
+    align-self: stretch;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 14px 36px #00000012;
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .cinematic-home.is-simple .simple-project:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+    box-shadow: 0 20px 44px #00000020;
+  }
+
+  .cinematic-home.is-simple .simple-project-toggle,
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-toggle {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    width: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .cinematic-home.is-simple .simple-project-image,
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: var(--surface-soft);
+  }
+
+  .cinematic-home.is-simple .simple-project-image img,
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    object-fit: cover;
+    transition: transform 350ms ease;
+  }
+
+  .cinematic-home.is-simple .simple-project:hover .simple-project-image img {
+    transform: scale(1.025);
+  }
+
+  .cinematic-home.is-simple .simple-project-summary,
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 38px;
+    grid-template-rows: auto 1fr;
+    align-items: center;
+    gap: 10px 18px;
+    min-width: 0;
+    min-height: 126px;
+    padding: 22px 24px;
+    border: 0;
+  }
+
+  .cinematic-home.is-simple .simple-project-summary .cinema-kicker {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--accent);
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+
+  .cinematic-home.is-simple .simple-project-summary strong,
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary strong {
+    grid-column: 1;
+    align-self: start;
+    font: 600 clamp(21px, 1.8vw, 27px)/1.14 var(--font-display);
+    letter-spacing: -.04em;
+    overflow-wrap: anywhere;
+  }
+
+  .cinematic-home.is-simple .simple-project-chevron {
+    position: static;
+    grid-column: 2;
+    grid-row: 2;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--accent);
+    transform-origin: center;
+  }
+
+  .cinematic-home.is-simple .simple-project-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -3px;
+    border-radius: 10px;
+  }
+
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] {
+    grid-column: 1 / -1;
+    height: auto;
+    align-self: start;
+    border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+  }
+
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-toggle {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+    grid-template-rows: minmax(220px, auto);
+  }
+
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-image {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary {
+    min-height: 220px;
+    padding: 32px 38px;
+    border-left: 1px solid var(--line);
+  }
+
+  .cinematic-home.is-simple .simple-project[data-expanded="true"] .simple-project-summary strong {
+    font-size: clamp(30px, 3vw, 46px);
+  }
+
+  .cinematic-home.is-simple .simple-project-details {
+    overflow: hidden;
+  }
+
+  .cinematic-home.is-simple .simple-project-details-inner {
+    padding: 0 38px;
+  }
+
+  .cinematic-home.is-simple .simple-project-details-inner > p {
+    max-width: 72ch;
+    margin: 26px 0 20px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+}
+
+@media (min-width: 1360px) and (hover: hover) and (pointer: fine) {
+  .cinematic-home.is-simple .cinema-static-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px;
+  }
+}
+
+/* Desktop Simple View uses compact, self-contained project overlays. */
+.desktop-project-tile { display: none; }
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+  .cinematic-home.is-simple .cinema-static-work { width: min(1440px, 89%); }
+  .cinematic-home.is-simple .cinema-static-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    gap: 16px;
+    max-width: none;
+    margin-top: 34px;
+  }
+  .cinematic-home.is-simple .simple-project { display: none; }
+  .cinematic-home.is-simple .desktop-project-tile {
+    position: relative;
+    display: block;
+    min-width: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface-soft);
+    isolation: isolate;
+  }
+  .cinematic-home.is-simple .desktop-project-thumbnail {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border: 0;
+    object-fit: cover;
+    transition: transform 250ms ease;
+  }
+  .cinematic-home.is-simple .desktop-project-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: clamp(13px, 1.3vw, 19px);
+    color: #f6f7fa;
+    background: linear-gradient(180deg, #05080c05 8%, #05080cbb 52%, #05080cf5 100%);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100%);
+    transition: transform 250ms cubic-bezier(.2, .7, .25, 1), opacity 200ms ease;
+  }
+  .cinematic-home.is-simple .desktop-project-tile:hover .desktop-project-overlay,
+  .cinematic-home.is-simple .desktop-project-tile:focus-within .desktop-project-overlay {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .cinematic-home.is-simple .desktop-project-tile:hover .desktop-project-thumbnail,
+  .cinematic-home.is-simple .desktop-project-tile:focus-within .desktop-project-thumbnail {
+    transform: scale(1.035);
+  }
+  .cinematic-home.is-simple .desktop-project-category {
+    margin-bottom: 6px;
+    color: #d3deed;
+    font: 600 8px/1.4 var(--font-mono);
+    letter-spacing: .13em;
+    text-transform: uppercase;
+  }
+  .cinematic-home.is-simple .desktop-project-overlay h3 {
+    margin: 0;
+    color: inherit;
+    font: 600 clamp(15px, 1.15vw, 19px)/1.15 var(--font-display);
+    letter-spacing: -.03em;
+  }
+  .cinematic-home.is-simple .desktop-project-overlay p {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 7px 0 0;
+    color: #e2e7ef;
+    font-size: 10px;
+    line-height: 1.55;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+  .cinematic-home.is-simple .desktop-project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 9px;
+  }
+  .cinematic-home.is-simple .desktop-project-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 30px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .cinematic-home.is-simple .desktop-project-links a:hover { color: #d6e5f7; }
+  .cinematic-home.is-simple .desktop-project-links a:focus-visible {
+    border-radius: 2px;
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+  }
+}
+@media (min-width: 1600px) and (hover: hover) and (pointer: fine) {
+  .cinematic-home.is-simple .cinema-static-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-home.is-simple .desktop-project-thumbnail,
+  .cinematic-home.is-simple .desktop-project-overlay { transition-duration: 0.01ms; }
+}
+
+@media (min-width: 1100px) and (hover: hover) and (pointer: fine) {
+  .cinematic-home.is-simple .cinema-static-work {
+    padding-top: clamp(112px, 13vh, 156px);
+    padding-bottom: clamp(96px, 10vh, 144px);
+  }
+
+  .cinematic-home.is-simple .cinema-static-grid {
+    margin-top: clamp(30px, 3.8vh, 46px);
+  }
+}
