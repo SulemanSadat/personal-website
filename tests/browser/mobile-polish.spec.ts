@@ -83,18 +83,19 @@ test("phone profile card keeps a steady gap above the dock on short and tall scr
   const dock = page.getByRole("navigation", { name: "Bottom navigation" });
   await expect(hero).toBeVisible();
 
-  for (const [width, height] of [[320, 740], [390, 844], [390, 500], [430, 932], [844, 390]]) {
+  for (const [width, height] of [[320, 740], [375, 667], [390, 844], [390, 500], [412, 924], [430, 932], [440, 956], [844, 390]]) {
     await page.setViewportSize({ width, height });
     await page.evaluate(() => {
       const heroElement = document.querySelector(".mobile-reference-hero")!;
       window.scrollTo({ top: Math.max(0, heroElement.getBoundingClientRect().height - innerHeight), behavior: "instant" });
     });
-    const [cardBox, dockBox, glow] = await Promise.all([
-      card.boundingBox(), dock.boundingBox(),
+    const [cardBox, dockBox, portraitBox, glow] = await Promise.all([
+      card.boundingBox(), dock.boundingBox(), page.locator(".mobile-reference-portrait").boundingBox(),
       page.locator(".mobile-reference-glow").evaluate(element => getComputedStyle(element).backgroundImage),
     ]);
     expect(cardBox).not.toBeNull();
     expect(dockBox).not.toBeNull();
+    expect(portraitBox!.y + portraitBox!.height).toBeLessThanOrEqual(cardBox!.y);
     expect(dockBox!.y - (cardBox!.y + cardBox!.height)).toBeGreaterThanOrEqual(10);
     expect(dockBox!.y - (cardBox!.y + cardBox!.height)).toBeLessThanOrEqual(15);
     expect(glow).toContain("radial-gradient");

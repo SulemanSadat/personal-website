@@ -46,8 +46,8 @@
 
 /* Footer treatment for the mobile Simple View only. */
 @media (max-width: 999px) {
-  .mobile-simple-view .site-shell .footer-container { margin-top: -72px; padding-top: 0; border-top-color: var(--line); background: var(--canvas); }
-  .mobile-simple-view .site-shell .footer-content { width: min(calc(100% - 40px), 720px); padding: 30px 0 calc(96px + env(safe-area-inset-bottom, 0px)); }
+  .mobile-simple-view .site-shell .footer-container { margin-top: 0; padding-top: 0; border-top-color: var(--line); background: var(--canvas); }
+  .mobile-simple-view .site-shell .footer-content { width: min(calc(100% - 40px), 720px); padding: 30px 0 24px; }
   .mobile-simple-view .site-shell .footer-main { display: grid; grid-template-columns: 1fr; gap: 0; }
   .mobile-simple-view .site-shell .footer-brand-section { grid-column: auto; padding-bottom: 22px; }
   .mobile-simple-view .site-shell .footer-brand-name { margin-bottom: 10px; font-size: clamp(28px, 8.5vw, 36px); line-height: 1; letter-spacing: -.05em; }
