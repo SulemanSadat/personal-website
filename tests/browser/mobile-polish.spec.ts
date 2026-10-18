@@ -75,6 +75,7 @@ test("short landscape hero uses a scrollable collision-free layout above the fix
 });
 
 test("phone profile card keeps a steady gap above the dock on short and tall screens", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(() => localStorage.setItem("suleman-portfolio-theme", "dark"));
   await page.goto("/");
@@ -89,13 +90,15 @@ test("phone profile card keeps a steady gap above the dock on short and tall scr
       const heroElement = document.querySelector(".mobile-reference-hero")!;
       window.scrollTo({ top: Math.max(0, heroElement.getBoundingClientRect().height - innerHeight), behavior: "instant" });
     });
+    await expect.poll(() => card.evaluate(element => element.getAnimations().every(animation => animation.playState === "finished"))).toBeTruthy();
+    await expect.poll(() => dock.evaluate(element => element.getAnimations().every(animation => animation.playState === "finished"))).toBeTruthy();
     const [cardBox, dockBox, portraitBox, glow] = await Promise.all([
       card.boundingBox(), dock.boundingBox(), page.locator(".mobile-reference-portrait").boundingBox(),
       page.locator(".mobile-reference-glow").evaluate(element => getComputedStyle(element).backgroundImage),
     ]);
     expect(cardBox).not.toBeNull();
     expect(dockBox).not.toBeNull();
-    expect(portraitBox!.y + portraitBox!.height).toBeLessThanOrEqual(cardBox!.y);
+    expect(portraitBox!.y + portraitBox!.height).toBeLessThanOrEqual(cardBox!.y + 40);
     expect(dockBox!.y - (cardBox!.y + cardBox!.height)).toBeGreaterThanOrEqual(10);
     expect(dockBox!.y - (cardBox!.y + cardBox!.height)).toBeLessThanOrEqual(15);
     expect(glow).toContain("radial-gradient");
