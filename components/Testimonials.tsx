@@ -124,7 +124,7 @@ export default function Testimonials({ autoPlay = true }: TestimonialsProps) {
                 <div className="profile-info">
                  <h3 className="verified-name">{t.name}<span className="testimonial-verified" role="img" aria-label="Verified testimonial"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.5 12.2 3l2.7-.1.9 2.5 2.2 1.6-.8 2.6.8 2.6-2.2 1.6-.9 2.5-2.7-.1L10 18.5 7.8 17l-2.7.1-.9-2.5L2 13l.8-2.6L2 7.8l2.2-1.6.9-2.5 2.7.1L10 1.5Z"/><path className="testimonial-verified-check" d="m6.8 10.2 2.1 2.1 4.4-4.6"/></svg></span></h3>
                     <p>{t.role}</p>
-                    <div className="stars" aria-label={`${t.rating} out of 5 stars`}><span aria-hidden="true">{renderStars(t.rating)}</span></div>
+                    <div className="stars" role="img" aria-label={`${t.rating} out of 5 stars`}><span aria-hidden="true">{renderStars(t.rating)}</span></div>
                   </div>
                 </div>
                 <p className="testimonial-text">“{t.text}”</p>

@@ -2,7 +2,7 @@
 
 **Personal Website**
 
-🌐 **[Visit Website](https://SulemanSadat.github.io/personal-website/)** · [GitHub](https://github.com/SulemanSadat)
+🌐 **[Visit Website](https://sulemansadat.com)** · [GitHub](https://github.com/SulemanSadat)
 
 ---
 

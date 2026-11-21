@@ -1,8 +1,9 @@
+"use client";
+
 import { IconArrowUpRight as FiArrowUpRight, IconCode as FiCode, IconWorld as FiGlobe, IconLayersIntersect as FiLayers } from "@tabler/icons-react";
 import Image from "next/image";
 import { assetPath } from "../lib/site-path";
 const suleman = assetPath("/assets/sulemansadat.jpg");
-const CV = assetPath("/assets/Suleman_Sadat.pdf");
 import SkillsShowcase from "./SkillsShowcase";
 
 export default function About({ embedded = false }) {
@@ -28,7 +29,7 @@ export default function About({ embedded = false }) {
               <div><FiLayers aria-hidden="true" /><span><strong>From idea to implementation</strong>Full-stack systems, with a product mindset.</span></div>
               <div><FiGlobe aria-hidden="true" /><span><strong>Built for collaboration</strong>Remote experience. Shared ambition.</span></div>
             </div>
-            <a href={CV} download className="button-secondary">Download Resume <FiArrowUpRight aria-hidden="true" /></a>
+            <a href="/contact/" className="button-secondary">Request résumé <FiArrowUpRight aria-hidden="true" /></a>
           </div>
         </div>
         <SkillsShowcase />

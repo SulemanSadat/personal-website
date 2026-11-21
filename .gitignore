@@ -48,3 +48,6 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Private documents must never be deployed with the static site.
+/private-documents/

@@ -1,19 +1,11 @@
 import type { NextConfig } from "next";
 
-const isGitHubPages = process.env.DEPLOY_TARGET === "github-pages";
-const basePath = isGitHubPages ? "/personal-website" : "";
-
 const nextConfig: NextConfig = {
-  // Keep the Node.js production build deployable as a compact Hostinger bundle.
-  // The GitHub Pages build continues to use output: "export" in its own branch.
-  ...(isGitHubPages ? {} : { output: "standalone" as const }),
-  ...(isGitHubPages ? {
-    output: "export",
-    basePath,
-    assetPrefix: `${basePath}/`,
-    trailingSlash: true,
-    images: { unoptimized: true },
-  } : {}),
+  // Hostinger serves the contents of `out` directly from public_html.
+  // Do not set basePath or assetPrefix: the site lives at the domain root.
+  output: "export",
+  trailingSlash: true,
+  images: { unoptimized: true },
   allowedDevOrigins: ["127.0.0.1"],
   /* config options here */
   devIndicators: false, 

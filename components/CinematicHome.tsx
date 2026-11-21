@@ -1,5 +1,6 @@
 "use client";
 import { Component, lazy, Suspense, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type SyntheticEvent } from "react";
+import dynamic from "next/dynamic";
 import Link from "./SectionLink";
 import Image from "next/image";
 import { assetPath } from "../lib/site-path";
@@ -7,16 +8,17 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { IconArrowDown, IconArrowUpRight, IconArrowLeft, IconArrowRight, IconBulb, IconCode, IconChartBar } from '@tabler/icons-react';
 const portrait = assetPath("/assets/hero-portrait.webp");
-const mobileProfile = assetPath("/assets/profile.png");
+const mobileProfile = assetPath("/assets/profile-mobile.webp");
 import { projects } from '../data/projects';
-import Testimonials from './Testimonials';
-import MobileSimpleProject from './MobileSimpleProject';
-import DesktopSimpleProject from './DesktopSimpleProject';
-import Pricing from '../app/pages/Pricing';
-import About from './About';
-import Contact from './Contact';
+const Testimonials = dynamic(() => import('./Testimonials'));
+const MobileSimpleProject = dynamic(() => import('./MobileSimpleProject'));
+const DesktopSimpleProject = dynamic(() => import('./DesktopSimpleProject'));
+const Pricing = dynamic(() => import('../app/pages/Pricing'));
+const About = dynamic(() => import('./About'));
+const Contact = dynamic(() => import('./Contact'));
 import HireButton from './HireButton';
 import { hasSeenOpeningThisSession } from '../utils/firstVisitPreloader';
+import { scrollToSection } from '../utils/sectionNavigation';
 function isSectionNavigationEvent(event: Event): event is CustomEvent<{ id: string; behavior: ScrollBehavior }> {
   return event instanceof CustomEvent && typeof event.detail === 'object' && event.detail !== null && 'id' in event.detail && 'behavior' in event.detail;
 }
@@ -50,6 +52,7 @@ export default function CinematicHome() {
   const [heroReady, setHeroReady] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [expandedProject, setExpandedProject] = useState<number | null>(null);
+  const [belowFoldReady, setBelowFoldReady] = useState(false);
   const cinematic = capable && !simple;
   const mobileSimple = mobile && !cinematic;
   const markHeroReady = () => {
@@ -79,6 +82,27 @@ export default function CinematicHome() {
     document.documentElement.classList.toggle('mobile-simple-view', mobileSimple);
     return () => document.documentElement.classList.remove('mobile-simple-view');
   }, [mobileSimple]);
+
+  useEffect(() => {
+    const loadBelowFold = () => setBelowFoldReady(true);
+    window.addEventListener('scroll', loadBelowFold, { once: true, passive: true });
+    return () => window.removeEventListener('scroll', loadBelowFold);
+  }, []);
+
+  useEffect(() => {
+    const loadHashTarget = () => {
+      if (['pricing', 'about', 'contact'].includes(window.location.hash.slice(1))) setBelowFoldReady(true);
+    };
+    loadHashTarget(); window.addEventListener('hashchange', loadHashTarget);
+    return () => window.removeEventListener('hashchange', loadHashTarget);
+  }, []);
+
+  useEffect(() => {
+    const id = window.location.hash.slice(1);
+    if (!belowFoldReady || !['pricing', 'about', 'contact'].includes(id)) return;
+    const frame = requestAnimationFrame(() => scrollToSection(id, 'instant'));
+    return () => cancelAnimationFrame(frame);
+  }, [belowFoldReady]);
 
   useEffect(() => {
     if (!mobileSimple || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -321,11 +345,8 @@ export default function CinematicHome() {
           <div className="mobile-reference-intro">
             <p>I turn ideas into digital<br />products that create<br />real impact.</p>
           </div>
-          <div className="mobile-reference-dots mobile-reference-dots--top" aria-hidden="true" />
-          <div className="mobile-reference-dots mobile-reference-dots--side" aria-hidden="true" />
-          <div className="mobile-reference-glow" aria-hidden="true" />
           <div className="mobile-reference-portrait">
-            <Image src={mobileProfile} alt="Suleman Sadat, software engineer" width={1254} height={1254} sizes="(max-width: 600px) 94vw, (max-width: 1099px) 68vw, 1px" loading={mobile ? 'eager' : 'lazy'} fetchPriority={mobile ? 'high' : 'low'} data-hero-essential onLoad={decodeMobileHero} onError={markMobileHeroReady} />
+            <Image src={mobileProfile} alt="Suleman Sadat, software engineer" width={1254} height={1254} sizes="(max-width: 600px) 94vw, (max-width: 1099px) 68vw, 1px" loading={mobile ? 'eager' : 'lazy'} fetchPriority="high" data-hero-essential onLoad={decodeMobileHero} onError={markMobileHeroReady} />
           </div>
           <div className="mobile-reference-process" aria-label="Product process: Think, Build, Scale">
             <svg className="mobile-reference-process-line" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -352,7 +373,7 @@ export default function CinematicHome() {
         <div className="cinema-hero-meta"><span>INDEPENDENT SOFTWARE ENGINEER</span><span><i /> AVAILABLE FOR SELECT PROJECTS</span></div>
         <div className="cinema-halo" aria-hidden="true" />
         <h1 className="cinema-hero-name">SULEMAN<span>SADAT<span className="cinema-period">.</span></span></h1>
-        <div className="cinema-portrait"><Image src={portrait} alt="Suleman Sadat standing with crossed arms in a black suit" width={1024} height={1536} sizes="(max-width: 999px) 76vw, 50vw" onLoad={decodeDesktopHero} onError={markDesktopHeroReady} /></div>
+        <div className="cinema-portrait"><Image src={portrait} alt="Suleman Sadat standing with crossed arms in a black suit" width={1024} height={1536} sizes="(max-width: 999px) 76vw, 50vw" fetchPriority="high" onLoad={decodeDesktopHero} onError={markDesktopHeroReady} /></div>
         <div className="cinema-story">
           <div className="cinema-hero-copy cinema-copy-left"><span className="cinema-kicker">HELLO, I’M SULEMAN.</span><p>Software Engineer<br />Full-Stack Developer</p></div>
           <div className="cinema-hero-copy cinema-copy-right" inert={heroInert}><span className="cinema-cross" aria-hidden="true">+</span><p className="cinema-mobile-statement">Building digital products. Bringing startups to life.</p><div className="cinema-actions"><HireButton /><Link href="/#portfolio">Explore My Work <IconArrowUpRight size={17} /></Link></div></div>
@@ -372,13 +393,13 @@ export default function CinematicHome() {
         {capable && (!mobile || homeVisible) && <button className="cinema-mode" onClick={() => { const nextSimple = !simple; skipIntro(); setExpandedProject(null); setSimple(nextSimple); try { localStorage.setItem(viewModeKey, nextSimple ? 'simple' : '3d'); } catch {} }}>{simple ? 'Enable 3D journey' : 'Use simple view'}</button>}
       </section>
     </div>
-    {!cinematic && <section className="cinema-static-work" aria-labelledby="static-work-title"><span className="cinema-kicker">02 / SELECTED WORK</span><h2 id="static-work-title">Ideas become<br /><em>real things.</em></h2><div className="cinema-static-grid">{projects.map(project => mobile ? <MobileSimpleProject key={project.id} project={project} expanded={expandedProject === project.id} onToggle={() => setExpandedProject(current => current === project.id ? null : project.id)} /> : <DesktopSimpleProject key={project.id} project={project} />)}</div></section>}
-    <div className="cinema-content">
+    {!cinematic && <section className="cinema-static-work" aria-labelledby="static-work-title"><span className="cinema-kicker">02 / SELECTED WORK</span><h2 id="static-work-title">Ideas become<br /><em>real things.</em></h2>{belowFoldReady && <div className="cinema-static-grid">{projects.map(project => mobile ? <MobileSimpleProject key={project.id} project={project} expanded={expandedProject === project.id} onToggle={() => setExpandedProject(current => current === project.id ? null : project.id)} /> : <DesktopSimpleProject key={project.id} project={project} />)}</div>}</section>}
+    {belowFoldReady && <div className="cinema-content">
       <Testimonials autoPlay={false} />
       <Pricing embedded />
       <About embedded />
       <Contact embedded />
-    </div>
+    </div>}
   </div>;
 }
 

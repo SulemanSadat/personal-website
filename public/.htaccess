@@ -1,0 +1,14 @@
+Options -MultiViews
+DirectoryIndex index.html
+
+<IfModule mod_alias.c>
+  Redirect gone /assets/Suleman_Sadat.pdf
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Next.js App Router's static export stores a route's RSC payload in a
+  # directory, while client navigation requests the dotted filename.
+  RewriteRule ^(.+/)(__next\.[^.]+)\.__PAGE__\.txt$ $1$2/__PAGE__.txt [L]
+</IfModule>

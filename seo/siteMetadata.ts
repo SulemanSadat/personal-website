@@ -1,5 +1,45 @@
 export const siteUrl = "https://sulemansadat.com";
 export const socialImage = `${siteUrl}/preview.jpg`;
+export const personId = `${siteUrl}/#person`;
+
+export const personStructuredData = {
+  "@type": "Person",
+  "@id": personId,
+  name: "Suleman Sadat",
+  url: siteUrl,
+  jobTitle: "Software Engineer and Full-Stack Developer",
+  description: "Suleman Sadat is a software engineer, full-stack developer, and technology entrepreneur building production-ready web applications, AI automation systems, and product-focused digital experiences.",
+  knowsAbout: ["Full-stack development", "Software engineering", "React", "Next.js", "Laravel", "Node.js", "AI automation", "n8n", "OpenAI API", "SaaS product development"],
+  sameAs: ["https://www.linkedin.com/in/suleman-sadat/", "https://github.com/SulemanSadat", "https://x.com/suleman_sadat_", "https://www.instagram.com/suleman_sadat_"],
+};
+
+export const websiteStructuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    personStructuredData,
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: "Suleman Sadat",
+      alternateName: "Suleman Sadat Portfolio",
+      description: "Portfolio and professional website of Suleman Sadat, a software engineer and full-stack developer.",
+      inLanguage: "en-GB",
+      publisher: { "@id": personId },
+    },
+  ],
+};
+
+export const profilePageStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  "@id": `${siteUrl}/about/#profile`,
+  url: `${siteUrl}/about/`,
+  name: "About Suleman Sadat",
+  description: "Professional biography of Suleman Sadat, a software engineer and full-stack developer.",
+  inLanguage: "en-GB",
+  mainEntity: { "@id": personId },
+};
 
 interface SeoPageDefinition {
   title: string;
@@ -79,22 +119,15 @@ export function getPageMetadata(pathname: string): PageMetadata {
 
 export function getStructuredData(pathname: string): { "@context": string; "@graph": Record<string, unknown>[] } {
   const page = getPageMetadata(pathname);
-  const person = {
-    "@type": "Person", "@id": `${siteUrl}/#person`, name: "Suleman Sadat",
-    url: siteUrl, image: socialImage, jobTitle: "Software Engineer",
-    description: "Full-stack software engineer building web applications, automation systems and product-focused digital experiences.",
-    knowsAbout: ["Full-stack development", "Software engineering", "React", "Next.js", "Laravel", "Node.js", "AI automation", "n8n", "OpenAI API", "SaaS product development"],
-    sameAs: ["https://www.linkedin.com/in/suleman-sadat/", "https://github.com/SulemanSadat", "https://x.com/suleman_sadat_", "https://www.instagram.com/suleman_sadat_"],
-  };
-  const graph: Record<string, unknown>[] = [person, {
+  const graph: Record<string, unknown>[] = [personStructuredData, {
     "@type": "WebSite", "@id": `${siteUrl}/#website`, url: siteUrl,
     name: "Suleman Sadat — Software Engineer", inLanguage: "en",
-    publisher: { "@id": `${siteUrl}/#person` },
+    publisher: { "@id": personId },
   }, {
     "@type": page.path === "/" || page.path === "/about" ? "ProfilePage" : "WebPage",
     "@id": `${page.canonical}#webpage`, url: page.canonical, name: page.title,
     description: page.description, isPartOf: { "@id": `${siteUrl}/#website` },
-    about: { "@id": `${siteUrl}/#person` }, inLanguage: "en",
+    about: { "@id": personId }, inLanguage: "en",
   }];
   if (page.path === "/portfolio") graph.push({
     "@type": "ItemList", "@id": `${siteUrl}/portfolio#projects`, name: "Software engineering projects by Suleman Sadat",
@@ -103,7 +136,7 @@ export function getStructuredData(pathname: string): { "@context": string; "@gra
       ["Student Management System", "Full-stack platform for student records, students and grades", "https://nationaloxford.com/"],
       ["CRM Automation Workflow", "Automated lead capture, qualification and sales notification workflow", "https://github.com/SulemanSadat/CRM-Lead-Automation-n8n"],
       ["Upwork Accelerator", "Chrome extension that displays client hire rates on Upwork job cards", "https://chromewebstore.google.com/detail/lpmgfgnefmaeaanofdjakdbemkieehgi"],
-    ].map(([name, description, url], index) => ({ "@type": "ListItem", position: index + 1, item: { "@type": "SoftwareApplication", name, description, url, applicationCategory: "BusinessApplication", operatingSystem: "Web browser", author: { "@id": `${siteUrl}/#person` } } })),
+    ].map(([name, description, url], index) => ({ "@type": "ListItem", position: index + 1, item: { "@type": "SoftwareApplication", name, description, url, applicationCategory: "BusinessApplication", operatingSystem: "Web browser", author: { "@id": personId } } })),
   });
   if (page.path && page.path !== "/") graph.push({
     "@type": "BreadcrumbList", "@id": `${page.canonical}#breadcrumb`,

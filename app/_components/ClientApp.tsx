@@ -1,13 +1,25 @@
 "use client";
-import { Suspense, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { scrollToSection } from "../../utils/sectionNavigation";
 import Footer from "../../components/Footer";
 import ContextMenu from "../../components/ContextMenu";
-import StudioExperience from "../../components/StudioExperience";
 import StoreProvider from "./StoreProvider";
+const StudioExperience = dynamic(() => import("../../components/StudioExperience"), { ssr: false });
+
+function DesktopStudioExperience() {
+ const [enabled, setEnabled] = useState(false);
+ useEffect(() => {
+  const media = window.matchMedia("(min-width: 1100px) and (hover: hover) and (pointer: fine)");
+  const update = () => setEnabled(media.matches);
+  update(); media.addEventListener("change", update);
+  return () => media.removeEventListener("change", update);
+ }, []);
+ return enabled ? <StudioExperience /> : null;
+}
 function RoutedSite({ children }: { children: React.ReactNode }){
  const pathname=usePathname();const searchParams=useSearchParams();const searchKey=searchParams.toString();const previousPath=useRef(pathname);const isHome=pathname==="/";const isNotFound=!["/","/courses","/blog","/about","/portfolio","/pricing","/contact"].includes(pathname);
  useEffect(()=>{document.documentElement.classList.toggle("is-homepage",isHome);return()=>document.documentElement.classList.remove("is-homepage")},[isHome]);
@@ -19,6 +31,6 @@ function RoutedSite({ children }: { children: React.ReactNode }){
   if(!isHome||document.querySelector('[data-home-ready="true"]'))navigate();
   return()=>{cancelAnimationFrame(frame);window.removeEventListener("hashchange",navigate);window.removeEventListener("popstate",navigate);window.removeEventListener("homepage-ready",navigate)}
  },[pathname,isHome,searchKey]);
- return <div className={`site-shell ${isNotFound?"is-notfound":""}`}><a className="skip-link" href="#main-content">Skip to content</a><Navbar/><main className={`site-main ${isNotFound?"site-main--notfound":""}`} id="main-content" tabIndex={-1}><div className="route-content"><Suspense fallback={null}>{children}</Suspense></div></main>{!isNotFound&&<Footer/>}<ContextMenu/><StudioExperience/><Toaster position="top-center" toastOptions={{duration:3500,style:{background:"var(--surface)",color:"var(--ink)",border:"1px solid var(--line)",borderRadius:"12px"}}}/></div>;
+ return <div className={`site-shell ${isNotFound?"is-notfound":""}`}><a className="skip-link" href="#main-content">Skip to content</a><Navbar/><main className={`site-main ${isNotFound?"site-main--notfound":""}`} id="main-content" tabIndex={-1}><div className="route-content"><Suspense fallback={null}>{children}</Suspense></div></main>{!isNotFound&&<Footer/>}<ContextMenu/><DesktopStudioExperience/><Toaster position="top-center" toastOptions={{duration:3500,style:{background:"var(--surface)",color:"var(--ink)",border:"1px solid var(--line)",borderRadius:"12px"}}}/></div>;
 }
 export default function ClientApp({ children }: { children: React.ReactNode }){return <Suspense fallback={null}><StoreProvider><RoutedSite>{children}</RoutedSite></StoreProvider></Suspense>}

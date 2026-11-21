@@ -36,11 +36,11 @@ function Footer() {
 
   const navigationLinks = [
     { label: 'Home', href: '/' },
-    { label: 'About', href: '/#about' },
-    { label: 'Projects', href: '/#portfolio' },
-    { label: 'Pricing', href: '/#pricing' },
+    { label: 'About', href: '/about/' },
+    { label: 'Projects', href: '/portfolio/' },
+    { label: 'Pricing', href: '/pricing/' },
     { label: 'Blog', href: '/blog' },
-    { label: 'Contact', href: '/#contact' }
+    { label: 'Contact', href: '/contact/' }
   ];
 
   const scrollToTop = () => {

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import Image from "next/image";
 import { IconBrandGithub as FaGithub, IconArrowUpRight as FaExternalLinkAlt, IconCode as FaCode, IconDeviceMobile as FaMobile, IconRobot as FaRobot, IconAutomation as FaCogs } from "@tabler/icons-react";

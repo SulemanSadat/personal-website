@@ -3,6 +3,9 @@
 @font-face { font-family: "Space Grotesk Variable"; font-style: normal; font-weight: 300 700; font-display: swap; src: url("@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2") format("woff2"); }
 @font-face { font-family: "Manrope"; font-style: normal; font-weight: 200 800; font-display: swap; src: url("@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2") format("woff2"); }
 @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 100 800; font-display: swap; src: url("@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2") format("woff2"); }
+@font-face { font-family: "Satoshi"; font-style: normal; font-weight: 400; font-display: swap; src: url("./fonts/Satoshi-400.woff2") format("woff2"); }
+@font-face { font-family: "Satoshi"; font-style: normal; font-weight: 500; font-display: swap; src: url("./fonts/Satoshi-500.woff2") format("woff2"); }
+@font-face { font-family: "Satoshi"; font-style: normal; font-weight: 700; font-display: swap; src: url("./fonts/Satoshi-700.woff2") format("woff2"); }
 :root {
   color-scheme: dark;
   --canvas: #000000; --surface: #000000; --surface-raised: #000000; --surface-soft: #000000;

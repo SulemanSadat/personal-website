@@ -22,6 +22,8 @@ import "../styles/FirstVisitPreloader.css";
 import FirstVisitPreloader from "../components/FirstVisitPreloader";
 import ClientApp from "./_components/ClientApp";
 import { assetPath, siteUrl } from "../lib/site-path";
+import StructuredData from "../components/StructuredData";
+import { websiteStructuredData } from "../seo/siteMetadata";
 
 const socialImageUrl = new URL("preview.jpg", `${siteUrl}/`).toString();
 
@@ -37,15 +39,14 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", creator: "@Suleman_Sadat_", title: "Suleman Sadat | Software Engineer & Tech Entrepreneur", description: "Full-stack software engineer building web applications, AI automation systems and product-focused digital experiences.", images: [socialImageUrl] },
   icons: { icon: [{ url: assetPath("/favicon.jpg"), type: "image/jpeg" }], apple: assetPath("/favicon.jpg") },
   manifest: assetPath("/manifest.webmanifest"),
-  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "none", "max-snippet": -1, "max-video-preview": -1 } },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en" data-theme="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
     <head>
       <script dangerouslySetInnerHTML={{ __html: `(function(){var h=document.documentElement;h.dataset.opening="pending";try{if(sessionStorage.getItem("suleman-studio-opening-v1")==="seen")h.dataset.opening="complete";}catch{}var saved=null;try{saved=localStorage.getItem("suleman-portfolio-theme");}catch{}h.dataset.theme=saved==="light"||saved==="dark"?saved:(matchMedia("(max-width: 999px)").matches?"dark":"light");}());` }} />
-      <link rel="preconnect" href="https://api.fontshare.com" />
-      <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" />
+      <StructuredData data={websiteStructuredData} />
     </head>
     <body><FirstVisitPreloader /><ClientApp>{children}</ClientApp><noscript><style>{'.studio-opening{display:none!important}html[data-opening="pending"]{overflow:auto}'}</style></noscript></body>
   </html>;

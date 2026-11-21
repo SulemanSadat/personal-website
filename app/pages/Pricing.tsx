@@ -1,169 +1,120 @@
 "use client";
-import { useState, useId } from "react";
+
+import { useId } from "react";
 import Link from "../../components/SectionLink";
-import { AnimatePresence, motion as Motion, useReducedMotion } from "framer-motion";
 import {
-  IconArrowUpRight as FiArrowUpRight,
-  IconCheck as FiCheck,
-  IconClock as FiClock,
-  IconCode as FiCode,
-  IconMessage as FiMessageSquare,
-  IconDeviceDesktop as FiMonitor,
-  IconShieldCheck as FiShield,
-  IconDeviceMobile as FiSmartphone,
-  IconX as FiX,
-  IconBolt as FiZap,
-  IconVideo as FiVideo,
+  IconArrowUpRight, IconCheck, IconClock, IconCode,
+  IconMessage, IconTrendingUp, IconShieldCheck, IconBolt,
 } from "@tabler/icons-react";
-import { pricingServices, shopifyPlan, shopifyPromotion } from "../../data/pricing";
-import ServiceOfferCard from "../../components/ServiceOfferCard";
-import { pricingComparisons } from "../../data/pricingComparisons";
 import { createPricingInquiry } from "../../utils/pricingInquiry";
-import type { ComponentType, CSSProperties, SVGProps } from "react";
-import type { PackagePricingPlan, PackageServiceId, PricingComparisonRow, ServiceId } from "../../types/pricing";
 
-type ServiceIcon = ComponentType<SVGProps<SVGSVGElement>>;
-const serviceIcons: Record<ServiceId, ServiceIcon> = {
-  "web-apps": FiMonitor,
-  automation: FiZap,
-  "mobile-app": FiSmartphone,
-  chatbots: FiMessageSquare,
-  consultation: FiVideo,
-};
 
-interface PricingCardProps {
-  plan: PackagePricingPlan;
-  serviceLabel: string;
-  serviceId: PackageServiceId;
-  comparison: PricingComparisonRow[];
+const solutions = [
+  { name: "Customer Growth Systems", price: "$299", serviceId: "web-apps", icon: IconTrendingUp, outcome: "Turn more visitors into paying customers.", features: ["High-converting business websites", "Automated lead generation", "Online ordering and booking systems", "Customer acquisition and follow-up", "Sales and conversion optimization"], cta: "Grow My Business", prompt: "My business, target customers, and customer growth goals:" },
+  { name: "Business Automation", price: "$499", serviceId: "automation", icon: IconBolt, outcome: "Save time, reduce operational costs, and eliminate repetitive manual work.", features: ["Workflow automation", "Business process optimization", "Third-party integrations", "Automated reporting and notifications", "Customer and data management"], cta: "Automate My Business", prompt: "My current tools, repetitive tasks, and time-saving goals:" },
+  { name: "AI Assistants & Chatbots", price: "$399", serviceId: "chatbots", icon: IconMessage, outcome: "Serve customers around the clock without increasing your workload.", features: ["Intelligent customer support", "AI-powered sales assistants", "WhatsApp, Telegram, and website integrations", "Business knowledge integration", "Automated customer interactions"], cta: "Build My AI Assistant", prompt: "My customer questions, preferred channels, and available business knowledge:" },
+  { name: "Custom Software & SaaS", price: "$1,499", serviceId: "web-apps", icon: IconCode, outcome: "Transform your business idea into a powerful, scalable digital product.", features: ["Custom web applications", "iOS and Android applications", "SaaS platforms", "Business management systems", "Custom backend and integrations"], cta: "Build My Product", prompt: "My product idea, intended users, and essential first-version requirements:" },
+];
+const consultations = [
+  { name: "AI & Business Automation Consulting", price: "$80", features: ["Business process assessment", "AI and automation opportunities", "Actionable implementation roadmap"] },
+  { name: "Software & Startup Consulting", price: "$80", features: ["Product strategy and validation", "Technical architecture", "MVP planning", "Development roadmap"] },
+  { name: "Software Engineering Career Mentorship", price: "$30", features: ["Personalized learning roadmap", "Technical career guidance", "Skill development strategy", "Portfolio recommendations"] },
+];
+const support = [
+  ["Free 15-minute discovery call", "Discuss your goals and explore whether a development project is the right fit."],
+  ["Personalized solution planning", "Prioritize the capabilities that address your business needs within the agreed scope."],
+  ["Guided implementation", "Get clear requests for the access, content, and feedback needed at each step."],
+  ["Knowledge transfer and handover", "Agree on documentation and walkthroughs so you can use and manage your solution."],
+  ["Transparent project milestones", "Review progress at agreed checkpoints, from scope approval to delivery."],
+];
+const faqs = [
+  ["Are the displayed prices final?", "Solution prices are starting points in USD. The final price depends on the agreed scope and business requirements. Consultations are fixed at the displayed price for one 60-minute session."],
+  ["What is included in the starting price?", "A focused solution with deliverables agreed before work begins. The listed capabilities are possibilities, not a bundle included at every starting price. Hosting, third-party subscriptions, and usage fees are discussed separately where needed."],
+  ["How long does a project take?", "Timing depends on complexity, integrations, and the availability of content and feedback. We agree on a realistic timeline and review milestones before development begins."],
+  ["Can I request a custom solution?", "Yes. Share your goals, current challenges, and budget. We can define a tailored scope or start with a focused first version."],
+  ["How do consultations work?", "Choose a topic and send a booking request with your goals and availability. Each session lasts 60 minutes. We confirm the agenda, time, and payment arrangements before the session; clicking Book a Session does not charge you."],
+  ["Is ongoing maintenance available?", "Ongoing maintenance can be discussed and quoted separately based on your support needs. Coverage, response expectations, and fees are agreed in advance."],
+];
+
+// Keep the existing subject/message query contract on the dedicated Contact route.
+// Price is carried in both fields because Contact has no separate price input.
+function inquiryHref(plan: { name: string; price: string }, serviceId: string, prompt: string) {
+  const inquiry = createPricingInquiry({ plan, serviceId, serviceLabel: plan.name });
+  const consultation = serviceId === "consultation";
+  const subject = consultation
+    ? inquiry.subject.replace("/hour", "/session")
+    : `Inquiry: ${plan.name} (from ${plan.price})`;
+  const message = consultation
+    ? `Hello Suleman,\n\nI’d like to book ${plan.name} at ${plan.price} for one 60-minute session.\n\n${prompt}\n\nPlease confirm availability and the next steps.\n\nBest,`
+    : `Hello Suleman,\n\nI’m interested in ${plan.name}, starting from ${plan.price}. I understand that capabilities depend on the agreed scope and business requirements.\n\n${prompt}\n\nPreferred timeline and budget:\n\nI’d like to discuss the scope, deliverables, timeline, and final price before development begins.\n\nBest,`;
+  return `/contact/?${new URLSearchParams({ subject, message }).toString()}#contact-form`;
 }
+const discoveryHref = `/contact/?${new URLSearchParams({ subject: "Free 15-minute discovery call", message: "Hello Suleman,\n\nI’d like to arrange a free 15-minute discovery call to discuss a potential development project.\n\nMy business goals and requirements:\n\nMy availability and time zone:\n\nBest," }).toString()}#contact-form`;
 
-function PricingCard({ plan, serviceLabel, serviceId, comparison }: PricingCardProps) {
+function OfferCard({ offer, consultation = false }: { offer: typeof solutions[number] | typeof consultations[number]; consultation?: boolean }) {
   const headingId = useId();
-  const delivery = plan.features.find((feature) => feature.startsWith("Delivery:"));
-  const inquiry = createPricingInquiry({ serviceLabel, serviceId, plan });
-  const href = `/?${new URLSearchParams([['subject', inquiry.subject], ['message', inquiry.message]]).toString()}#contact-form`;
-
+  const solution = "serviceId" in offer ? offer : null;
+  const Icon = solution?.icon ?? IconClock;
   return (
-    <article className={`p2__card ${plan.featured ? "p2__card--featured" : ""}`} aria-labelledby={headingId}>
-      <div className="p2__cardTop">
-        <span className="p2__tier">{plan.id === "essential" ? "The essentials" : plan.id === "recommended" ? "Room to grow" : "Built around you"}</span>
-        {plan.badge && <span className="p2__badge">{plan.badge}</span>}
+    <article className="pv__card" aria-labelledby={headingId}>
+      <span className="pv__cardIcon"><Icon aria-hidden="true" /></span>
+      <h3 id={headingId}>{offer.name}</h3>
+      {solution && <p className="pv__outcome">{solution.outcome}</p>}
+      <div className="pv__pricing">
+        {!consultation && <span className="pv__priceLabel">Starting at</span>}
+        <div><strong className="pv__price">{offer.price}</strong>{consultation && <span className="pv__unit">/session</span>}</div>
+        <span className="pv__priceNote">{consultation ? "USD · 60 minutes · One-to-one" : "USD · Final price agreed before development"}</span>
       </div>
-      <header className="p2__cardHeader">
-        <h3 className="p2__planName" id={headingId}>{plan.name}</h3>
-        <p className="p2__planDesc">{plan.desc}</p>
-      </header>
-      <div className="p2__pricing">
-        <span className="p2__priceLabel">{plan.unit} from</span>
-        <div className="p2__priceRow">
-          <span className="p2__price">{plan.price}</span>
-          {plan.discount && <span className="p2__discount">{plan.discount}</span>}
-        </div>
-        <span className="p2__priceNote">USD · Scoped to your project</span>
-      </div>
-      <Link
-        className={`p2__btn ${plan.featured ? "p2__btn--primary" : "p2__btn--secondary"}`}
-        href={href}
-        scroll={false}
-        aria-label={`${plan.cta} — ${serviceLabel}, ${plan.name}`}
-      >
-        {plan.cta}<FiArrowUpRight aria-hidden="true" />
+      <p className="pv__listLabel">{consultation ? "Session focus" : "Potential capabilities"}</p>
+      <ul className="pv__features">{offer.features.map(feature => <li key={feature}><IconCheck aria-hidden="true" /><span>{feature}</span></li>)}</ul>
+      {!consultation && <p className="pv__scope">Selected to fit your scope; not all included at the starting price.</p>}
+      <Link className="pv__button" href={inquiryHref(offer, solution?.serviceId ?? "consultation", solution?.prompt ?? "My goals and questions:\n\nPreferred times and time zone:")} scroll={false} aria-label={`${solution?.cta ?? "Book a Session"} — ${offer.name}`}>
+        {solution?.cta ?? "Book a Session"}<IconArrowUpRight aria-hidden="true" />
       </Link>
-      <div className="p2__divider" />
-      <h4 className="p2__included">Package comparison</h4>
-      <ul className="p2__list" aria-label={`${plan.name} feature comparison`}>
-        {comparison.map(({ id, label, values, upgrade }) => {
-          const value = values[plan.id];
-          const included = value !== false;
-          const Icon = included ? FiCheck : FiX;
-          return (
-            <li key={id} data-feature={id} className={`p2__item ${included ? "p2__item--included" : "p2__item--excluded"} ${included && upgrade ? "p2__item--upgrade" : ""}`}>
-              <Icon className="p2__featureIcon" aria-hidden="true" />
-              <span>
-                <span className="p2__srOnly">{typeof value === "string" ? `${label}: ` : ""}{included ? "Included. " : "Not included. "}</span>
-                {typeof value === "string" ? value : label}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
-      <div className="p2__delivery"><FiClock aria-hidden="true" /><span>{delivery || "Delivery: tailored to your scope"}</span></div>
     </article>
   );
 }
 
-interface PricingProps { embedded?: boolean }
-type CSSPropertiesWithVars = CSSProperties & Record<`--${string}`, string | number>;
-
-export default function Pricing({ embedded = false }: PricingProps) {
+export default function Pricing({ embedded = false }: { embedded?: boolean }) {
   const Heading = embedded ? "h2" : "h1";
-  const [selectedService, setSelectedService] = useState(pricingServices[0].id);
-  const service = pricingServices.find(({ id }) => id === selectedService) || pricingServices[0];
-  const reduceMotion = useReducedMotion();
-  const plansId = useId();
-  const comparison = service.id === "consultation" ? [] : pricingComparisons[service.id];
-  const gridStyle: CSSPropertiesWithVars = { "--p2-feature-count": comparison.length, "--p2-card-rows": comparison.length + 7 };
-
   return (
-    <section className="p2" id="pricing">
-      <section className="p2__hero" aria-labelledby="pricing-title">
-        <div className="p2__container">
-          <span className="p2__pill"><span aria-hidden="true" /> Clear scope. Thoughtful pricing.</span>
-          <Heading className="p2__title" id="pricing-title">
-            Software, automation &amp; AI.<br /><span className="p2__titleAccent">Built around your goals.</span>
-          </Heading>
-          <p className="p2__subtitle">Software built for your business, at every stage.<br className="p2__desktopBreak" /> Choose your service. Find your fit. Let&apos;s make it happen.</p>
-          <div className="p2__trust" aria-label="Included with every project">
-            <span><FiCode aria-hidden="true" /> Modern technologies</span>
-            <span><FiShield aria-hidden="true" /> {service.id === "consultation" ? "Focused, practical guidance" : "100% satisfaction guaranteed"}</span>
-          </div>
-        </div>
-      </section>
-      <section className="p2__plans" aria-label="Service pricing">
-        <div className="p2__container">
-          <div className="p2__selectorLabel" id="pricing-service-label">What are we building?</div>
-          <div className="p2__serviceSelector" role="group" aria-labelledby="pricing-service-label">
-            {pricingServices.map(({ id, label }) => {
-              const Icon = serviceIcons[id];
-              return <button key={id} type="button" className="p2__serviceOption" aria-pressed={selectedService === id} aria-controls={plansId} onClick={() => setSelectedService(id)}><Icon aria-hidden="true" />{label}</button>;
-            })}
-          </div>
-          <p className="p2__srOnly" role="status" aria-atomic="true">Showing {service.label} pricing packages.</p>
-          <div id={plansId} role="region" aria-label={`${service.label} pricing packages`}>
-            <AnimatePresence mode="wait" initial={false}>
-              <Motion.div
-                key={service.id}
-                initial={{ opacity: reduceMotion ? 1 : 0, y: reduceMotion ? 0 : 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: reduceMotion ? 1 : 0, y: reduceMotion ? 0 : -4 }}
-                transition={{ duration: reduceMotion ? 0 : 0.18, ease: "easeOut" }}
-              >
-                <div className="p2__serviceIntro"><h2>{service.label}, built for you.</h2><p>{service.summary}</p></div>
-                {service.id === "consultation" ? (
-                  <div className="p2__consultationGrid">
-                    {service.plans.map((plan) => <ServiceOfferCard key={plan.id} plan={plan} serviceLabel={service.label} serviceId={service.id} />)}
-                  </div>
-                ) : (
-              <div className="p2__grid" style={gridStyle}>
-                    {service.plans.map((plan) => <PricingCard key={plan.id} plan={plan} serviceLabel={service.label} serviceId={service.id} comparison={comparison} />)}
-                  </div>
-                )}
-                {service.id === "web-apps" && <ServiceOfferCard plan={shopifyPlan} serviceLabel="Web Apps" serviceId={service.id} promotion={shopifyPromotion} />}
-                <div className="p2__terms">
-                  <p>{service.id === "consultation" ? "USD per hour · One-to-one sessions" : "Final pricing depends on scope & business needs."}</p>
-                  {service.note && <p>{service.note}</p>}
-                </div>
-              </Motion.div>
-            </AnimatePresence>
-          </div>
-          <div className="p2__fineprint" id="pricing-contact">
-            <div className="p2__contactIcon"><FiMessageSquare aria-hidden="true" /></div>
-            <div className="p2__contactCopy"><h2>A different kind of project?</h2><p>Tell me what you have in mind. We&apos;ll find the right scope together.</p></div>
-            <a className="p2__link" href="mailto:sadat.fullstack@gmail.com">Let&apos;s talk <FiArrowUpRight aria-hidden="true" /></a>
-          </div>
-        </div>
-      </section>
+    <section className="pv__page" id="pricing" aria-labelledby="pricing-title">
+      <div className="pv__container">
+        <header className="pv__hero">
+          <span className="section-eyebrow">INVEST IN YOUR BUSINESS</span>
+          <Heading id="pricing-title">Invest in Results,<br /><span>Not Just Technology.</span></Heading>
+          <p>Get tailored digital solutions designed to grow your business, automate operations, and turn your ideas into scalable products.</p>
+          <div className="pv__outcomes"><span><IconTrendingUp aria-hidden="true" />Grow revenue</span><span><IconBolt aria-hidden="true" />Reduce operational costs</span><span><IconClock aria-hidden="true" />Save time</span></div>
+        </header>
+
+        <section className="pv__section" aria-labelledby="solutions-title">
+          <div className="pv__sectionHeader"><div><span className="pv__eyebrow">01 / BUSINESS SOLUTIONS</span><h2 id="solutions-title">What would move your business forward?</h2></div><p>Start with your goals. Build the solution around them.</p></div>
+          <div className="pv__solutions">{solutions.map(offer => <OfferCard key={offer.name} offer={offer} />)}</div>
+          <p className="pv__terms">Every project is scoped individually. Final pricing depends on the agreed deliverables and business requirements.</p>
+          <div className="pv__evidence"><p><strong>Experience you can explore.</strong> See existing work across business platforms, CRM automation, and customer integrations in my portfolio.</p><Link href="/portfolio" className="pv__textLink">Explore my work <IconArrowUpRight aria-hidden="true" /></Link></div>
+        </section>
+
+        <section className="pv__section" aria-labelledby="consulting-title">
+          <div className="pv__sectionHeader"><div><span className="pv__eyebrow">02 / FOCUSED CONSULTATIONS</span><h2 id="consulting-title">Expert Guidance. Clear Direction.</h2></div><p>A focused, 60-minute session to work through your next step.</p></div>
+          <div className="pv__consultations">{consultations.map(offer => <OfferCard key={offer.name} offer={offer} consultation />)}</div>
+        </section>
+
+        <section className="pv__section" aria-labelledby="value-title">
+          <div className="pv__sectionHeader"><div><span className="pv__eyebrow">03 / A PARTNER IN THE PROCESS</span><h2 id="value-title">More Than Just Development</h2></div><p>Clear decisions. Less guesswork. Support from the first conversation to handover.</p></div>
+          <div className="pv__support">{support.map(([title, description], index) => <div key={title}><span className="pv__step">0{index + 1}</span><h3>{title}</h3><p>{description}</p></div>)}</div>
+          <p className="pv__terms">Planning, implementation support, and handover are tailored to the development project and included where agreed in the scope.</p>
+        </section>
+
+        <section className="pv__confidence" aria-labelledby="confidence-title">
+          <div><IconShieldCheck className="pv__shield" aria-hidden="true" /><h2 id="confidence-title">Start With Confidence</h2><p>Discuss your requirements before committing to a paid development project. We agree on the scope, deliverables, timeline, and final price before development begins.</p></div>
+          <div className="pv__discovery"><Link className="pv__button" href={discoveryHref} scroll={false}>Book a Free Discovery Call <IconArrowUpRight aria-hidden="true" /></Link><span>15 minutes · Explore your project before committing</span></div>
+        </section>
+
+        <section className="pv__section pv__faq" aria-labelledby="faq-title">
+          <div><span className="pv__eyebrow">THE DETAILS, UP FRONT</span><h2 id="faq-title">Frequently Asked Questions</h2></div>
+          <div>{faqs.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div>
+        </section>
+      </div>
     </section>
   );
 }
